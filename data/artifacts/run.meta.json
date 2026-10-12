@@ -1,0 +1,19 @@
+{
+  "generatedAtUtc": "2026-10-12T21:26:02.921Z",
+  "catalogObjectCount": 1200,
+  "primaryVersion": "nova-class-v1",
+  "keepOutKm": 25,
+  "windowStartUtc": "2026-10-12T16:00:00.000Z",
+  "windowMinutes": 120,
+  "sampleStepMinutes": 1,
+  "screeningHorizonSec": 11340,
+  "screenStepSec": 30,
+  "topN": 20,
+  "satelliteJsVersion": "7.x",
+  "notes": [
+    "Catalog: CelesTrak GP GROUP=active (pinned snapshot); filter perigee_km < 2000",
+    "Demo cap applied: 1200 of 15157 LEO candidates",
+    "Hold cells: 9 / 121",
+    "Miss-distance keep-out is a demo screening rule — not Pc / ops COLA"
+  ]
+}

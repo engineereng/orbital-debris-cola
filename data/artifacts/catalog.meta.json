@@ -1,0 +1,10 @@
+{
+  "source": "CelesTrak GP GROUP=active (pinned snapshot)",
+  "pinnedEpochUtc": "2026-10-12T06:14:17.469Z",
+  "filter": "perigee_km < 2000",
+  "objectCount": 1200,
+  "totalCandidatesBeforeCap": 15157,
+  "demoCap": 1200,
+  "disclaimer": "TLE/GP-class screening input — not HAC/SP. Demo pin is a capped LEO subset of a public active catalog snapshot.",
+  "downloadedAtUtc": "2026-10-12T21:25:52.780Z"
+}

@@ -1,0 +1,735 @@
+{
+  "windowStartUtc": "2026-10-12T16:00:00.000Z",
+  "windowMinutes": 120,
+  "sampleStepMinutes": 1,
+  "keepOutKm": 25,
+  "screeningHorizonLabel": "ascent + ~3h early orbit",
+  "cells": [
+    {
+      "delayMinutes": 0,
+      "status": "clear",
+      "minMissKm": 47.25,
+      "worstNoradId": "46906"
+    },
+    {
+      "delayMinutes": 1,
+      "status": "clear",
+      "minMissKm": 67.26,
+      "worstNoradId": "46906"
+    },
+    {
+      "delayMinutes": 2,
+      "status": "clear",
+      "minMissKm": 71.54,
+      "worstNoradId": "67276"
+    },
+    {
+      "delayMinutes": 3,
+      "status": "clear",
+      "minMissKm": 37.42,
+      "worstNoradId": "43946"
+    },
+    {
+      "delayMinutes": 4,
+      "status": "clear",
+      "minMissKm": 45.96,
+      "worstNoradId": "43946"
+    },
+    {
+      "delayMinutes": 5,
+      "status": "clear",
+      "minMissKm": 70.8,
+      "worstNoradId": "63235"
+    },
+    {
+      "delayMinutes": 6,
+      "status": "clear",
+      "minMissKm": 77.8,
+      "worstNoradId": "58023"
+    },
+    {
+      "delayMinutes": 7,
+      "status": "clear",
+      "minMissKm": 78.04,
+      "worstNoradId": "43146"
+    },
+    {
+      "delayMinutes": 8,
+      "status": "clear",
+      "minMissKm": 62.16,
+      "worstNoradId": "61870"
+    },
+    {
+      "delayMinutes": 9,
+      "status": "clear",
+      "minMissKm": 43.79,
+      "worstNoradId": "62672"
+    },
+    {
+      "delayMinutes": 10,
+      "status": "clear",
+      "minMissKm": 45.95,
+      "worstNoradId": "64544"
+    },
+    {
+      "delayMinutes": 11,
+      "status": "clear",
+      "minMissKm": 72.02,
+      "worstNoradId": "66675"
+    },
+    {
+      "delayMinutes": 12,
+      "status": "clear",
+      "minMissKm": 95.8,
+      "worstNoradId": "67399"
+    },
+    {
+      "delayMinutes": 13,
+      "status": "hold",
+      "minMissKm": 15.29,
+      "worstNoradId": "63347"
+    },
+    {
+      "delayMinutes": 14,
+      "status": "clear",
+      "minMissKm": 43.75,
+      "worstNoradId": "67392"
+    },
+    {
+      "delayMinutes": 15,
+      "status": "hold",
+      "minMissKm": 22.68,
+      "worstNoradId": "62669"
+    },
+    {
+      "delayMinutes": 16,
+      "status": "clear",
+      "minMissKm": 25.24,
+      "worstNoradId": "44859"
+    },
+    {
+      "delayMinutes": 17,
+      "status": "clear",
+      "minMissKm": 27.99,
+      "worstNoradId": "60576"
+    },
+    {
+      "delayMinutes": 18,
+      "status": "clear",
+      "minMissKm": 71.85,
+      "worstNoradId": "62902"
+    },
+    {
+      "delayMinutes": 19,
+      "status": "clear",
+      "minMissKm": 69,
+      "worstNoradId": "45603"
+    },
+    {
+      "delayMinutes": 20,
+      "status": "hold",
+      "minMissKm": 23.42,
+      "worstNoradId": "68433"
+    },
+    {
+      "delayMinutes": 21,
+      "status": "clear",
+      "minMissKm": 46.28,
+      "worstNoradId": "43083"
+    },
+    {
+      "delayMinutes": 22,
+      "status": "clear",
+      "minMissKm": 43.65,
+      "worstNoradId": "66705"
+    },
+    {
+      "delayMinutes": 23,
+      "status": "clear",
+      "minMissKm": 39.81,
+      "worstNoradId": "68697"
+    },
+    {
+      "delayMinutes": 24,
+      "status": "clear",
+      "minMissKm": 58.41,
+      "worstNoradId": "68467"
+    },
+    {
+      "delayMinutes": 25,
+      "status": "clear",
+      "minMissKm": 59.26,
+      "worstNoradId": "69020"
+    },
+    {
+      "delayMinutes": 26,
+      "status": "clear",
+      "minMissKm": 69.05,
+      "worstNoradId": "59371"
+    },
+    {
+      "delayMinutes": 27,
+      "status": "clear",
+      "minMissKm": 44.57,
+      "worstNoradId": "66303"
+    },
+    {
+      "delayMinutes": 28,
+      "status": "clear",
+      "minMissKm": 80.07,
+      "worstNoradId": "66762"
+    },
+    {
+      "delayMinutes": 29,
+      "status": "hold",
+      "minMissKm": 8.32,
+      "worstNoradId": "68445"
+    },
+    {
+      "delayMinutes": 30,
+      "status": "clear",
+      "minMissKm": 32.93,
+      "worstNoradId": "63987"
+    },
+    {
+      "delayMinutes": 31,
+      "status": "clear",
+      "minMissKm": 45.74,
+      "worstNoradId": "41851"
+    },
+    {
+      "delayMinutes": 32,
+      "status": "clear",
+      "minMissKm": 83.43,
+      "worstNoradId": "39451"
+    },
+    {
+      "delayMinutes": 33,
+      "status": "clear",
+      "minMissKm": 55.51,
+      "worstNoradId": "48425"
+    },
+    {
+      "delayMinutes": 34,
+      "status": "clear",
+      "minMissKm": 47.45,
+      "worstNoradId": "48425"
+    },
+    {
+      "delayMinutes": 35,
+      "status": "clear",
+      "minMissKm": 52.34,
+      "worstNoradId": "62730"
+    },
+    {
+      "delayMinutes": 36,
+      "status": "clear",
+      "minMissKm": 61.79,
+      "worstNoradId": "69544"
+    },
+    {
+      "delayMinutes": 37,
+      "status": "clear",
+      "minMissKm": 27.52,
+      "worstNoradId": "56153"
+    },
+    {
+      "delayMinutes": 38,
+      "status": "clear",
+      "minMissKm": 60.08,
+      "worstNoradId": "53526"
+    },
+    {
+      "delayMinutes": 39,
+      "status": "clear",
+      "minMissKm": 53.77,
+      "worstNoradId": "61047"
+    },
+    {
+      "delayMinutes": 40,
+      "status": "clear",
+      "minMissKm": 52.68,
+      "worstNoradId": "68793"
+    },
+    {
+      "delayMinutes": 41,
+      "status": "clear",
+      "minMissKm": 52.74,
+      "worstNoradId": "66701"
+    },
+    {
+      "delayMinutes": 42,
+      "status": "clear",
+      "minMissKm": 37.59,
+      "worstNoradId": "49052"
+    },
+    {
+      "delayMinutes": 43,
+      "status": "clear",
+      "minMissKm": 85.98,
+      "worstNoradId": "64570"
+    },
+    {
+      "delayMinutes": 44,
+      "status": "clear",
+      "minMissKm": 67.97,
+      "worstNoradId": "66996"
+    },
+    {
+      "delayMinutes": 45,
+      "status": "clear",
+      "minMissKm": 83.52,
+      "worstNoradId": "62660"
+    },
+    {
+      "delayMinutes": 46,
+      "status": "clear",
+      "minMissKm": 56.56,
+      "worstNoradId": "68632"
+    },
+    {
+      "delayMinutes": 47,
+      "status": "hold",
+      "minMissKm": 20.81,
+      "worstNoradId": "66722"
+    },
+    {
+      "delayMinutes": 48,
+      "status": "clear",
+      "minMissKm": 51.29,
+      "worstNoradId": "58558"
+    },
+    {
+      "delayMinutes": 49,
+      "status": "clear",
+      "minMissKm": 44.12,
+      "worstNoradId": "57990"
+    },
+    {
+      "delayMinutes": 50,
+      "status": "clear",
+      "minMissKm": 51.95,
+      "worstNoradId": "66717"
+    },
+    {
+      "delayMinutes": 51,
+      "status": "clear",
+      "minMissKm": 84.54,
+      "worstNoradId": "66738"
+    },
+    {
+      "delayMinutes": 52,
+      "status": "clear",
+      "minMissKm": 40.41,
+      "worstNoradId": "68422"
+    },
+    {
+      "delayMinutes": 53,
+      "status": "clear",
+      "minMissKm": 57.5,
+      "worstNoradId": "45460"
+    },
+    {
+      "delayMinutes": 54,
+      "status": "hold",
+      "minMissKm": 24.39,
+      "worstNoradId": "36605"
+    },
+    {
+      "delayMinutes": 55,
+      "status": "clear",
+      "minMissKm": 51.42,
+      "worstNoradId": "58141"
+    },
+    {
+      "delayMinutes": 56,
+      "status": "clear",
+      "minMissKm": 86.18,
+      "worstNoradId": "66785"
+    },
+    {
+      "delayMinutes": 57,
+      "status": "clear",
+      "minMissKm": 65.76,
+      "worstNoradId": "62653"
+    },
+    {
+      "delayMinutes": 58,
+      "status": "clear",
+      "minMissKm": 65.42,
+      "worstNoradId": "60565"
+    },
+    {
+      "delayMinutes": 59,
+      "status": "clear",
+      "minMissKm": 88.29,
+      "worstNoradId": "42839"
+    },
+    {
+      "delayMinutes": 60,
+      "status": "clear",
+      "minMissKm": 53.24,
+      "worstNoradId": "62627"
+    },
+    {
+      "delayMinutes": 61,
+      "status": "clear",
+      "minMissKm": 42.82,
+      "worstNoradId": "64889"
+    },
+    {
+      "delayMinutes": 62,
+      "status": "clear",
+      "minMissKm": 42.74,
+      "worstNoradId": "63125"
+    },
+    {
+      "delayMinutes": 63,
+      "status": "clear",
+      "minMissKm": 45.92,
+      "worstNoradId": "61614"
+    },
+    {
+      "delayMinutes": 64,
+      "status": "clear",
+      "minMissKm": 49.57,
+      "worstNoradId": "68441"
+    },
+    {
+      "delayMinutes": 65,
+      "status": "clear",
+      "minMissKm": 31.59,
+      "worstNoradId": "59444"
+    },
+    {
+      "delayMinutes": 66,
+      "status": "clear",
+      "minMissKm": 28.06,
+      "worstNoradId": "56732"
+    },
+    {
+      "delayMinutes": 67,
+      "status": "clear",
+      "minMissKm": 68.34,
+      "worstNoradId": "58648"
+    },
+    {
+      "delayMinutes": 68,
+      "status": "clear",
+      "minMissKm": 31.61,
+      "worstNoradId": "68463"
+    },
+    {
+      "delayMinutes": 69,
+      "status": "clear",
+      "minMissKm": 58.38,
+      "worstNoradId": "60496"
+    },
+    {
+      "delayMinutes": 70,
+      "status": "clear",
+      "minMissKm": 63.29,
+      "worstNoradId": "59098"
+    },
+    {
+      "delayMinutes": 71,
+      "status": "clear",
+      "minMissKm": 33.58,
+      "worstNoradId": "42826"
+    },
+    {
+      "delayMinutes": 72,
+      "status": "clear",
+      "minMissKm": 60.18,
+      "worstNoradId": "58908"
+    },
+    {
+      "delayMinutes": 73,
+      "status": "clear",
+      "minMissKm": 28.77,
+      "worstNoradId": "68629"
+    },
+    {
+      "delayMinutes": 74,
+      "status": "clear",
+      "minMissKm": 39.98,
+      "worstNoradId": "55326"
+    },
+    {
+      "delayMinutes": 75,
+      "status": "clear",
+      "minMissKm": 60.3,
+      "worstNoradId": "40143"
+    },
+    {
+      "delayMinutes": 76,
+      "status": "clear",
+      "minMissKm": 25.4,
+      "worstNoradId": "58918"
+    },
+    {
+      "delayMinutes": 77,
+      "status": "clear",
+      "minMissKm": 70.95,
+      "worstNoradId": "40074"
+    },
+    {
+      "delayMinutes": 78,
+      "status": "clear",
+      "minMissKm": 32.88,
+      "worstNoradId": "59451"
+    },
+    {
+      "delayMinutes": 79,
+      "status": "clear",
+      "minMissKm": 53.89,
+      "worstNoradId": "66694"
+    },
+    {
+      "delayMinutes": 80,
+      "status": "clear",
+      "minMissKm": 56.79,
+      "worstNoradId": "68460"
+    },
+    {
+      "delayMinutes": 81,
+      "status": "clear",
+      "minMissKm": 76.79,
+      "worstNoradId": "68491"
+    },
+    {
+      "delayMinutes": 82,
+      "status": "clear",
+      "minMissKm": 70.49,
+      "worstNoradId": "66175"
+    },
+    {
+      "delayMinutes": 83,
+      "status": "clear",
+      "minMissKm": 30.03,
+      "worstNoradId": "59557"
+    },
+    {
+      "delayMinutes": 84,
+      "status": "clear",
+      "minMissKm": 78.81,
+      "worstNoradId": "63205"
+    },
+    {
+      "delayMinutes": 85,
+      "status": "clear",
+      "minMissKm": 78.18,
+      "worstNoradId": "55076"
+    },
+    {
+      "delayMinutes": 86,
+      "status": "clear",
+      "minMissKm": 62.18,
+      "worstNoradId": "43619"
+    },
+    {
+      "delayMinutes": 87,
+      "status": "clear",
+      "minMissKm": 35.54,
+      "worstNoradId": "66759"
+    },
+    {
+      "delayMinutes": 88,
+      "status": "clear",
+      "minMissKm": 97.64,
+      "worstNoradId": "43028"
+    },
+    {
+      "delayMinutes": 89,
+      "status": "clear",
+      "minMissKm": 56.02,
+      "worstNoradId": "69024"
+    },
+    {
+      "delayMinutes": 90,
+      "status": "clear",
+      "minMissKm": 74.02,
+      "worstNoradId": "59117"
+    },
+    {
+      "delayMinutes": 91,
+      "status": "clear",
+      "minMissKm": 54.79,
+      "worstNoradId": "67287"
+    },
+    {
+      "delayMinutes": 92,
+      "status": "clear",
+      "minMissKm": 70.31,
+      "worstNoradId": "59117"
+    },
+    {
+      "delayMinutes": 93,
+      "status": "clear",
+      "minMissKm": 35.09,
+      "worstNoradId": "62389"
+    },
+    {
+      "delayMinutes": 94,
+      "status": "clear",
+      "minMissKm": 54.99,
+      "worstNoradId": "44350"
+    },
+    {
+      "delayMinutes": 95,
+      "status": "clear",
+      "minMissKm": 45.83,
+      "worstNoradId": "62712"
+    },
+    {
+      "delayMinutes": 96,
+      "status": "clear",
+      "minMissKm": 77.77,
+      "worstNoradId": "67276"
+    },
+    {
+      "delayMinutes": 97,
+      "status": "clear",
+      "minMissKm": 99.45,
+      "worstNoradId": "60522"
+    },
+    {
+      "delayMinutes": 98,
+      "status": "clear",
+      "minMissKm": 42.54,
+      "worstNoradId": "43946"
+    },
+    {
+      "delayMinutes": 99,
+      "status": "hold",
+      "minMissKm": 21.95,
+      "worstNoradId": "66697"
+    },
+    {
+      "delayMinutes": 100,
+      "status": "clear",
+      "minMissKm": 63.64,
+      "worstNoradId": "49492"
+    },
+    {
+      "delayMinutes": 101,
+      "status": "clear",
+      "minMissKm": 70.22,
+      "worstNoradId": "64840"
+    },
+    {
+      "delayMinutes": 102,
+      "status": "clear",
+      "minMissKm": 64.98,
+      "worstNoradId": "61870"
+    },
+    {
+      "delayMinutes": 103,
+      "status": "clear",
+      "minMissKm": 105.32,
+      "worstNoradId": "53947"
+    },
+    {
+      "delayMinutes": 104,
+      "status": "clear",
+      "minMissKm": 30.06,
+      "worstNoradId": "66766"
+    },
+    {
+      "delayMinutes": 105,
+      "status": "clear",
+      "minMissKm": 35.3,
+      "worstNoradId": "64544"
+    },
+    {
+      "delayMinutes": 106,
+      "status": "clear",
+      "minMissKm": 77.66,
+      "worstNoradId": "60546"
+    },
+    {
+      "delayMinutes": 107,
+      "status": "clear",
+      "minMissKm": 56.94,
+      "worstNoradId": "60546"
+    },
+    {
+      "delayMinutes": 108,
+      "status": "hold",
+      "minMissKm": 24.88,
+      "worstNoradId": "63347"
+    },
+    {
+      "delayMinutes": 109,
+      "status": "clear",
+      "minMissKm": 31.89,
+      "worstNoradId": "67392"
+    },
+    {
+      "delayMinutes": 110,
+      "status": "hold",
+      "minMissKm": 20.97,
+      "worstNoradId": "62669"
+    },
+    {
+      "delayMinutes": 111,
+      "status": "clear",
+      "minMissKm": 34.08,
+      "worstNoradId": "44859"
+    },
+    {
+      "delayMinutes": 112,
+      "status": "clear",
+      "minMissKm": 31.61,
+      "worstNoradId": "61618"
+    },
+    {
+      "delayMinutes": 113,
+      "status": "clear",
+      "minMissKm": 67.14,
+      "worstNoradId": "62902"
+    },
+    {
+      "delayMinutes": 114,
+      "status": "clear",
+      "minMissKm": 58.9,
+      "worstNoradId": "45603"
+    },
+    {
+      "delayMinutes": 115,
+      "status": "clear",
+      "minMissKm": 35.28,
+      "worstNoradId": "68433"
+    },
+    {
+      "delayMinutes": 116,
+      "status": "clear",
+      "minMissKm": 37.54,
+      "worstNoradId": "54752"
+    },
+    {
+      "delayMinutes": 117,
+      "status": "clear",
+      "minMissKm": 41.38,
+      "worstNoradId": "56225"
+    },
+    {
+      "delayMinutes": 118,
+      "status": "clear",
+      "minMissKm": 49.4,
+      "worstNoradId": "68697"
+    },
+    {
+      "delayMinutes": 119,
+      "status": "clear",
+      "minMissKm": 69.43,
+      "worstNoradId": "64088"
+    },
+    {
+      "delayMinutes": 120,
+      "status": "clear",
+      "minMissKm": 67.21,
+      "worstNoradId": "69020"
+    }
+  ]
+}
