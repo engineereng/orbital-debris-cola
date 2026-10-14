@@ -1,0 +1,33 @@
+{
+  "name": "orbital-debris-cola",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 43127",
+    "build": "next build",
+    "start": "next start --port 43127",
+    "lint": "eslint",
+    "precompute": "tsx precompute/run.ts",
+    "precompute:pin": "tsx precompute/run.ts --pin-only",
+    "precompute:screen": "tsx precompute/run.ts --screen-only"
+  },
+  "dependencies": {
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "satellite.js": "^7.1.0",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "description": "Cape COLA screening demo (Nova-class simulated) — portfolio screening, not ops COLA"
+}
