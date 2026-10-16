@@ -1,6 +1,7 @@
 import * as satellite from "satellite.js";
 import type { CatalogObject } from "./catalog";
-import type { ApproachRow, PrimaryEphemeris, StripCell } from "../lib/types";
+import { temeToLla } from "./geo";
+import type { ApproachRow, GeoPoint, PrimaryEphemeris, StripCell } from "../lib/types";
 
 const KEEP_OUT_KM = 25;
 
@@ -63,7 +64,12 @@ export function screenDelay(opts: {
     new Date(opts.ephem.referenceLiftoffUtc).getTime() +
     opts.delayMinutes * 60_000;
 
-  type Cand = ApproachRow & { key: string };
+  type Cand = ApproachRow & {
+    key: string;
+    primaryR: [number, number, number];
+    secondaryR: { x: number; y: number; z: number };
+    tAbsMs: number;
+  };
   const bestByObject = new Map<string, Cand>();
   let globalMin = Infinity;
   let worstNoradId: string | undefined;
@@ -90,6 +96,9 @@ export function screenDelay(opts: {
           name: cache.obj.name,
           missKm: d,
           tRelSec: sample.tRelSec,
+          primaryR: sample.r,
+          secondaryR: sec,
+          tAbsMs,
         });
       }
     }
@@ -98,12 +107,19 @@ export function screenDelay(opts: {
   const approaches = [...bestByObject.values()]
     .sort((a, b) => a.missKm - b.missKm)
     .slice(0, topN)
-    .map(({ noradId, name, missKm: m, tRelSec }) => ({
-      noradId,
-      name,
-      missKm: Math.round(m * 100) / 100,
-      tRelSec,
-    }));
+    .map((c) => {
+      const date = new Date(c.tAbsMs);
+      const primary: GeoPoint = temeToLla(c.primaryR, date);
+      const secondary: GeoPoint = temeToLla(c.secondaryR, date);
+      return {
+        noradId: c.noradId,
+        name: c.name,
+        missKm: Math.round(c.missKm * 100) / 100,
+        tRelSec: c.tRelSec,
+        primary,
+        secondary,
+      };
+    });
 
   const minMissKm =
     Number.isFinite(globalMin) && globalMin !== Infinity

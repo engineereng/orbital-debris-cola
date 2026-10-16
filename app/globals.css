@@ -211,8 +211,11 @@ body {
 .slider-panel {
   animation-delay: 0.22s;
 }
+.viz-panel {
+  animation-delay: 0.26s;
+}
 .table-panel {
-  animation-delay: 0.28s;
+  animation-delay: 0.32s;
 }
 
 .panel-head h2 {
@@ -399,6 +402,239 @@ tr.breach td:nth-child(3) {
   font-weight: 600;
 }
 
+tr.selected-row td {
+  background: rgba(31, 111, 139, 0.12);
+  box-shadow: inset 3px 0 0 var(--sea);
+}
+
+tbody tr {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+tbody tr:hover td {
+  background: rgba(31, 111, 139, 0.06);
+}
+
+tbody tr.selected-row:hover td {
+  background: rgba(31, 111, 139, 0.14);
+}
+
+td.muted {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.method-captions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.method-captions span {
+  padding: 0.28rem 0.55rem;
+  background: var(--paper-2);
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.viz-subhead {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.viz-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.viz-bg {
+  fill: #e8f0f3;
+}
+
+.viz-grid-lines line {
+  stroke: rgba(14, 36, 51, 0.08);
+  stroke-width: 1;
+}
+
+.viz-track {
+  stroke: var(--sea);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.viz-pad circle {
+  fill: var(--ink);
+}
+
+.viz-pad-ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  opacity: 0.45;
+}
+
+.viz-label {
+  fill: var(--ink);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+.viz-approach {
+  cursor: pointer;
+  outline: none;
+}
+
+.viz-approach.dimmed {
+  opacity: 0.22;
+}
+
+.viz-approach.active .viz-secondary-dot,
+.viz-approach.active .viz-primary-dot {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.viz-miss-link {
+  stroke: rgba(14, 36, 51, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+
+.viz-approach.breach .viz-miss-link {
+  stroke: rgba(196, 92, 38, 0.55);
+}
+
+.viz-primary-dot {
+  fill: #fff;
+  stroke: var(--sea-deep);
+  stroke-width: 1.5;
+}
+
+.viz-secondary-dot {
+  fill: var(--sea);
+  stroke: none;
+}
+
+.viz-approach.breach .viz-secondary-dot {
+  fill: var(--hold);
+}
+
+.viz-ascent-band {
+  fill: rgba(31, 111, 139, 0.1);
+}
+
+.viz-axis {
+  stroke: rgba(14, 36, 51, 0.25);
+  stroke-width: 1;
+}
+
+.viz-axis-label {
+  fill: var(--ink-soft);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.viz-axis-label.ascent-tag {
+  fill: var(--sea);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.viz-alt-line {
+  stroke: var(--sea-deep);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.viz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin: 0.55rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.viz-legend .leg::before {
+  content: "";
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.3rem;
+  border-radius: 50%;
+  vertical-align: -1px;
+}
+
+.viz-legend .leg.pad::before {
+  background: var(--ink);
+}
+.viz-legend .leg.track::before {
+  border-radius: 2px;
+  background: var(--sea);
+}
+.viz-legend .leg.sec::before {
+  background: var(--sea);
+}
+.viz-legend .leg.pri::before {
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--sea-deep);
+}
+
+.viz-selected {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(31, 111, 139, 0.1);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.viz-clear-sel {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+
+.viz-clear-sel:hover {
+  color: var(--ink);
+  border-color: var(--sea);
+}
+
+.viz-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
 .state {
   padding: 1rem;
   border-radius: 10px;
@@ -479,6 +715,12 @@ tr.breach td:nth-child(3) {
   margin-right: auto;
   color: var(--ink-soft);
   font-size: 0.82rem;
+}
+
+@media (max-width: 900px) {
+  .viz-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 800px) {

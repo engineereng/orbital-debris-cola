@@ -5,6 +5,7 @@ import type {
   CatalogMeta,
   RunMeta,
   StripArtifact,
+  VizArtifact,
 } from "../lib/types";
 
 export function writeArtifacts(opts: {
@@ -12,6 +13,7 @@ export function writeArtifacts(opts: {
   publicDataDir: string;
   strip: StripArtifact;
   approaches: ApproachesArtifact;
+  viz: VizArtifact;
   runMeta: RunMeta;
   catalogMetaPath: string;
 }): void {
@@ -21,6 +23,7 @@ export function writeArtifacts(opts: {
   const files: Record<string, unknown> = {
     "strip.json": opts.strip,
     "approaches.json": opts.approaches,
+    "viz.json": opts.viz,
     "run.meta.json": opts.runMeta,
   };
 

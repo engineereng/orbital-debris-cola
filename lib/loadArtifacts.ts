@@ -1,8 +1,11 @@
 import type {
   ApproachesArtifact,
   CatalogMeta,
+  CompactTrackSample,
+  GeoPoint,
   RunMeta,
   StripArtifact,
+  VizArtifact,
 } from "./types";
 
 async function fetchJson<T>(path: string): Promise<T> {
@@ -16,18 +19,20 @@ async function fetchJson<T>(path: string): Promise<T> {
 export type DemoArtifacts = {
   strip: StripArtifact;
   approaches: ApproachesArtifact;
+  viz: VizArtifact;
   catalogMeta: CatalogMeta;
   runMeta: RunMeta;
 };
 
 export async function loadDemoArtifacts(): Promise<DemoArtifacts> {
-  const [strip, approaches, catalogMeta, runMeta] = await Promise.all([
+  const [strip, approaches, viz, catalogMeta, runMeta] = await Promise.all([
     fetchJson<StripArtifact>("/data/strip.json"),
     fetchJson<ApproachesArtifact>("/data/approaches.json"),
+    fetchJson<VizArtifact>("/data/viz.json"),
     fetchJson<CatalogMeta>("/data/catalog.meta.json"),
     fetchJson<RunMeta>("/data/run.meta.json"),
   ]);
-  return { strip, approaches, catalogMeta, runMeta };
+  return { strip, approaches, viz, catalogMeta, runMeta };
 }
 
 export function formatUtc(iso: string): string {
@@ -49,3 +54,25 @@ export function formatDuration(sec: number): string {
   }
   return s === 0 ? `${m}m` : `${m}m ${s}s`;
 }
+
+export type TrackPoint = {
+  tRelSec: number;
+  lat: number;
+  lon: number;
+  altKm: number;
+};
+
+export function expandTrack(samples: CompactTrackSample[]): TrackPoint[] {
+  return samples.map(([tRelSec, lat, lon, altKm]) => ({
+    tRelSec,
+    lat,
+    lon,
+    altKm,
+  }));
+}
+
+export function approachMarkerId(noradId: string): string {
+  return `approach-${noradId}`;
+}
+
+export type { GeoPoint };

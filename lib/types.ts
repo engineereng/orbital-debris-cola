@@ -16,16 +16,45 @@ export type StripArtifact = {
   cells: StripCell[];
 };
 
+export type GeoPoint = {
+  lat: number;
+  lon: number;
+  altKm: number;
+};
+
 export type ApproachRow = {
   noradId: string;
   name: string;
   missKm: number;
   tRelSec: number;
+  /** Primary geodetic at TCA (closest sample on 30s grid). */
+  primary?: GeoPoint;
+  /** Secondary geodetic at TCA. */
+  secondary?: GeoPoint;
 };
 
 export type ApproachesArtifact = {
   topN: number;
   byDelayMinutes: Record<string, ApproachRow[]>;
+};
+
+/** Compact track sample: [tRelSec, lat, lon, altKm] */
+export type CompactTrackSample = [number, number, number, number];
+
+export type VizArtifact = {
+  pad: { lat: number; lon: number; altKm: number; label: string };
+  trackStepSec: number;
+  ascentDurationSec: number;
+  horizonSec: number;
+  /** What the viz shows / does not claim */
+  honesty: string[];
+  byDelayMinutes: Record<
+    string,
+    {
+      /** Primary ground track + altitude samples for this T₀ */
+      track: CompactTrackSample[];
+    }
+  >;
 };
 
 export type CatalogMeta = {
