@@ -441,163 +441,79 @@ td.muted {
   letter-spacing: 0.01em;
 }
 
-.viz-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.viz-stage {
+  position: relative;
+  height: min(520px, 62vh);
+  min-height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b2833;
+  border: 1px solid rgba(14, 36, 51, 0.2);
 }
 
-.viz-subhead {
-  margin: 0 0 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-}
-
-.viz-svg {
-  width: 100%;
-  height: auto;
+.viz-canvas {
+  width: 100% !important;
+  height: 100% !important;
   display: block;
+  touch-action: none;
 }
 
-.viz-bg {
-  fill: #e8f0f3;
+.viz-canvas-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: min(520px, 62vh);
+  min-height: 320px;
+  background: #0b2833;
+  color: rgba(245, 250, 252, 0.75);
+  border-radius: 12px;
+  font-size: 0.92rem;
 }
 
-.viz-grid-lines line {
-  stroke: rgba(14, 36, 51, 0.08);
-  stroke-width: 1;
-}
-
-.viz-track {
-  stroke: var(--sea);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.9;
-}
-
-.viz-pad circle {
-  fill: var(--ink);
-}
-
-.viz-pad-ring {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.5;
-  opacity: 0.45;
-}
-
-.viz-label {
-  fill: var(--ink);
-  font-size: 11px;
-  font-family: var(--font-sans);
-  font-weight: 600;
-}
-
-.viz-approach {
-  cursor: pointer;
-  outline: none;
-}
-
-.viz-approach.dimmed {
-  opacity: 0.22;
-}
-
-.viz-approach.active .viz-secondary-dot,
-.viz-approach.active .viz-primary-dot {
-  stroke: var(--ink);
-  stroke-width: 1.5;
-}
-
-.viz-miss-link {
-  stroke: rgba(14, 36, 51, 0.35);
-  stroke-width: 1;
-  stroke-dasharray: 3 2;
-}
-
-.viz-approach.breach .viz-miss-link {
-  stroke: rgba(196, 92, 38, 0.55);
-}
-
-.viz-primary-dot {
-  fill: #fff;
-  stroke: var(--sea-deep);
-  stroke-width: 1.5;
-}
-
-.viz-secondary-dot {
-  fill: var(--sea);
-  stroke: none;
-}
-
-.viz-approach.breach .viz-secondary-dot {
-  fill: var(--hold);
-}
-
-.viz-ascent-band {
-  fill: rgba(31, 111, 139, 0.1);
-}
-
-.viz-axis {
-  stroke: rgba(14, 36, 51, 0.25);
-  stroke-width: 1;
-}
-
-.viz-axis-label {
-  fill: var(--ink-soft);
-  font-size: 10px;
-  font-family: var(--font-mono);
-}
-
-.viz-axis-label.ascent-tag {
-  fill: var(--sea);
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 10px;
-}
-
-.viz-alt-line {
-  stroke: var(--sea-deep);
-  stroke-width: 2.25;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.viz-legend {
+.viz-overlay-legend {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1rem;
-  margin: 0.55rem 0 0;
-  font-size: 0.78rem;
-  color: var(--ink-soft);
+  gap: 0.45rem 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(8, 28, 40, 0.72);
+  color: rgba(245, 250, 252, 0.88);
+  font-size: 0.72rem;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
 }
 
-.viz-legend .leg::before {
+.viz-overlay-legend .leg::before {
   content: "";
   display: inline-block;
-  width: 0.7rem;
-  height: 0.7rem;
+  width: 0.65rem;
+  height: 0.65rem;
   margin-right: 0.3rem;
   border-radius: 50%;
   vertical-align: -1px;
 }
 
-.viz-legend .leg.pad::before {
-  background: var(--ink);
+.viz-overlay-legend .leg.pad::before {
+  background: #c45c26;
 }
-.viz-legend .leg.track::before {
+.viz-overlay-legend .leg.track::before {
   border-radius: 2px;
-  background: var(--sea);
+  background: #3aa0c0;
 }
-.viz-legend .leg.sec::before {
-  background: var(--sea);
+.viz-overlay-legend .leg.sec::before {
+  background: #2f7d4a;
 }
-.viz-legend .leg.pri::before {
-  background: #fff;
-  box-shadow: inset 0 0 0 1.5px var(--sea-deep);
+.viz-overlay-legend .leg.breach::before {
+  background: #c45c26;
+}
+
+.viz-stats {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
 }
 
 .viz-selected {
@@ -717,9 +633,10 @@ td.muted {
   font-size: 0.82rem;
 }
 
-@media (max-width: 900px) {
-  .viz-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 800px) {
+  .viz-stage,
+  .viz-canvas-fallback {
+    height: min(420px, 58vh);
   }
 }
 

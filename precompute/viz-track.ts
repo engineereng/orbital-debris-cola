@@ -1,10 +1,12 @@
-import { CAPE_PAD, compactTrackSample, temeToLla } from "./geo";
-import type { CompactTrackSample, PrimaryEphemeris, VizArtifact } from "../lib/types";
+import { CAPE_PAD, compactEcefSample, padEcef, temeToEcef } from "./geo";
+import type { CompactEcefSample, PrimaryEphemeris, VizArtifact } from "../lib/types";
+
+const EARTH_RADIUS_KM = 6378.137;
 
 /**
- * Build geodetic primary tracks for each delay.
- * Same relative TEME profile; absolute epoch slides → Earth rotation moves the
- * ground track. Secondaries are not in this file (see approaches.json geo).
+ * Build ECEF primary tracks for each delay (3D hero).
+ * Same relative TEME profile; absolute epoch slides → Earth rotation moves ECEF path.
+ * Neighborhood secondaries live on approaches.json (primaryEcef / secondaryEcef at TCA).
  */
 export function buildVizArtifact(opts: {
   ephem: PrimaryEphemeris;
@@ -18,24 +20,30 @@ export function buildVizArtifact(opts: {
 
   for (let d = 0; d <= delays; d++) {
     const liftoffMs = refMs + d * 60_000;
-    const track: CompactTrackSample[] = [];
+    const primaryEcef: CompactEcefSample[] = [];
     for (const sample of opts.ephem.samples) {
-      if (sample.tRelSec % opts.trackStepSec !== 0 && sample.tRelSec !== opts.ephem.horizonSec) {
+      if (
+        sample.tRelSec % opts.trackStepSec !== 0 &&
+        sample.tRelSec !== opts.ephem.horizonSec
+      ) {
         continue;
       }
       const date = new Date(liftoffMs + sample.tRelSec * 1000);
-      const geo = temeToLla(sample.r, date);
-      track.push(compactTrackSample(sample.tRelSec, geo));
+      const ecef = temeToEcef(sample.r, date);
+      primaryEcef.push(compactEcefSample(sample.tRelSec, ecef));
     }
-    byDelayMinutes[String(d)] = { track };
+    byDelayMinutes[String(d)] = { primaryEcef };
   }
 
   return {
+    frame: "ECEF",
+    earthRadiusKm: EARTH_RADIUS_KM,
     pad: {
       lat: CAPE_PAD.lat,
       lon: CAPE_PAD.lon,
       altKm: CAPE_PAD.altKm,
       label: CAPE_PAD.label,
+      ecef: padEcef(),
     },
     trackStepSec: opts.trackStepSec,
     ascentDurationSec: opts.ephem.ascentDurationSec,
@@ -43,8 +51,8 @@ export function buildVizArtifact(opts: {
     honesty: [
       "Delay slider changes liftoff time only — the relative vehicle profile is unchanged.",
       "Absolute geometry vs catalog shifts because Earth rotates and secondaries move on the absolute clock.",
-      "Map shows primary ground track + pad; approach markers are primary/secondary at TCA on the 30s screening grid.",
-      "Not a 3D globe, not Pc, not ops COLA / TraCSS.",
+      "3D view: ECEF primary path from pad through ascent/early orbit; neighborhood = top-N approaches at TCA.",
+      "Near-miss highlight: miss < 25 km on the 30 s screening grid — not Pc / ops COLA / TraCSS.",
     ],
     byDelayMinutes,
   };

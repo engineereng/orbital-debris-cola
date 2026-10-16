@@ -1,7 +1,8 @@
 import type {
   ApproachesArtifact,
   CatalogMeta,
-  CompactTrackSample,
+  CompactEcefSample,
+  EcefVec,
   GeoPoint,
   RunMeta,
   StripArtifact,
@@ -55,24 +56,16 @@ export function formatDuration(sec: number): string {
   return s === 0 ? `${m}m` : `${m}m ${s}s`;
 }
 
-export type TrackPoint = {
+export type EcefPoint = {
   tRelSec: number;
-  lat: number;
-  lon: number;
-  altKm: number;
+  ecef: EcefVec;
 };
 
-export function expandTrack(samples: CompactTrackSample[]): TrackPoint[] {
-  return samples.map(([tRelSec, lat, lon, altKm]) => ({
+export function expandEcefTrack(samples: CompactEcefSample[]): EcefPoint[] {
+  return samples.map(([tRelSec, x, y, z]) => ({
     tRelSec,
-    lat,
-    lon,
-    altKm,
+    ecef: [x, y, z],
   }));
 }
 
-export function approachMarkerId(noradId: string): string {
-  return `approach-${noradId}`;
-}
-
-export type { GeoPoint };
+export type { GeoPoint, EcefVec };

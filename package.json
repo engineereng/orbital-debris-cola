@@ -12,10 +12,13 @@
     "precompute:screen": "tsx precompute/run.ts --screen-only"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "satellite.js": "^7.1.0",
+    "three": "^0.186.1",
     "tsx": "^4.23.15",
     "zod": "^4.6.7"
   },
@@ -24,10 +27,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "Cape COLA screening demo (Nova-class simulated) — portfolio screening, not ops COLA"
+  "description": "Cape COLA screening demo (Nova-class simulated) \u2014 portfolio screening, not ops COLA"
 }

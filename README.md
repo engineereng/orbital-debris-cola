@@ -11,7 +11,7 @@ Portfolio **COLA screening** demo: scrub a 2-hour Cape Canaveral launch window a
 - Screening horizon: ascent + ~3 h early orbit per T₀
 - Keep-out rule: miss distance **&lt; 25 km** → hold on the risk strip
 - Pinned CelesTrak GP/TLE-class catalog (LEO perigee &lt; 2000 km), demo-capped for size
-- Offline UI: risk strip · delay slider · **pad/trajectory + approach viz** · approach table · honesty disclaimer
+- Offline UI: risk strip · delay slider · **3D primary trajectory + neighborhood** · approach table · honesty disclaimer
 - Delay = liftoff time only (does not reshape the vehicle profile); absolute geometry vs catalog shifts with Earth rotation + moving secondaries
 - Shell congestion / altitude–inclination bins → **v2**
 

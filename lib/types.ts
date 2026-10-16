@@ -22,6 +22,9 @@ export type GeoPoint = {
   altKm: number;
 };
 
+/** ECEF position km */
+export type EcefVec = [number, number, number];
+
 export type ApproachRow = {
   noradId: string;
   name: string;
@@ -31,6 +34,10 @@ export type ApproachRow = {
   primary?: GeoPoint;
   /** Secondary geodetic at TCA. */
   secondary?: GeoPoint;
+  /** Primary ECEF km at TCA — for 3D neighborhood. */
+  primaryEcef?: EcefVec;
+  /** Secondary ECEF km at TCA. */
+  secondaryEcef?: EcefVec;
 };
 
 export type ApproachesArtifact = {
@@ -38,11 +45,19 @@ export type ApproachesArtifact = {
   byDelayMinutes: Record<string, ApproachRow[]>;
 };
 
-/** Compact track sample: [tRelSec, lat, lon, altKm] */
-export type CompactTrackSample = [number, number, number, number];
+/** Compact ECEF track sample: [tRelSec, xKm, yKm, zKm] */
+export type CompactEcefSample = [number, number, number, number];
 
 export type VizArtifact = {
-  pad: { lat: number; lon: number; altKm: number; label: string };
+  frame: "ECEF";
+  earthRadiusKm: number;
+  pad: {
+    lat: number;
+    lon: number;
+    altKm: number;
+    label: string;
+    ecef: EcefVec;
+  };
   trackStepSec: number;
   ascentDurationSec: number;
   horizonSec: number;
@@ -51,8 +66,8 @@ export type VizArtifact = {
   byDelayMinutes: Record<
     string,
     {
-      /** Primary ground track + altitude samples for this T₀ */
-      track: CompactTrackSample[];
+      /** Primary ECEF path for this T₀ (Earth rotation applied to shared TEME profile) */
+      primaryEcef: CompactEcefSample[];
     }
   >;
 };

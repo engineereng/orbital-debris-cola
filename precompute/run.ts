@@ -149,7 +149,7 @@ function runScreen(): void {
 
   const approaches: ApproachesArtifact = { topN: TOP_N, byDelayMinutes };
 
-  console.log("Building per-delay primary geodetic tracks for viz…");
+  console.log("Building per-delay primary ECEF tracks for 3D viz…");
   const viz = buildVizArtifact({
     ephem,
     windowMinutes: WINDOW_MINUTES,
@@ -176,7 +176,7 @@ function runScreen(): void {
         : "Full filtered LEO set used",
       `Hold cells: ${holdCount} / ${cells.length}`,
       "Miss-distance keep-out is a demo screening rule — not Pc / ops COLA",
-      `Viz: per-delay primary tracks @ ${VIZ_TRACK_STEP_SEC}s + approach geodetic at TCA`,
+      `Viz: per-delay primary ECEF tracks @ ${VIZ_TRACK_STEP_SEC}s + approach ECEF/geodetic at TCA`,
     ],
   });
 

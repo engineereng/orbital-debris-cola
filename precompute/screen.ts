@@ -1,7 +1,13 @@
 import * as satellite from "satellite.js";
 import type { CatalogObject } from "./catalog";
-import { temeToLla } from "./geo";
-import type { ApproachRow, GeoPoint, PrimaryEphemeris, StripCell } from "../lib/types";
+import { temeToEcef, temeToLla } from "./geo";
+import type {
+  ApproachRow,
+  EcefVec,
+  GeoPoint,
+  PrimaryEphemeris,
+  StripCell,
+} from "../lib/types";
 
 const KEEP_OUT_KM = 25;
 
@@ -111,6 +117,8 @@ export function screenDelay(opts: {
       const date = new Date(c.tAbsMs);
       const primary: GeoPoint = temeToLla(c.primaryR, date);
       const secondary: GeoPoint = temeToLla(c.secondaryR, date);
+      const primaryEcef: EcefVec = temeToEcef(c.primaryR, date);
+      const secondaryEcef: EcefVec = temeToEcef(c.secondaryR, date);
       return {
         noradId: c.noradId,
         name: c.name,
@@ -118,6 +126,8 @@ export function screenDelay(opts: {
         tRelSec: c.tRelSec,
         primary,
         secondary,
+        primaryEcef,
+        secondaryEcef,
       };
     });
 
