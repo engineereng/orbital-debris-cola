@@ -5,7 +5,13 @@ import { Line, OrbitControls } from "@react-three/drei";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import type { ApproachRow, EcefVec, VizArtifact } from "@/lib/types";
-import { expandEcefTrack } from "@/lib/loadArtifacts";
+import {
+  computeLiveNeighborhood,
+  expandEcefTrack,
+  primaryAtIndex,
+  scrubIndexForTime,
+  type LiveNeighborhoodObject,
+} from "@/lib/loadArtifacts";
 
 type Props = {
   viz: VizArtifact;
@@ -13,6 +19,7 @@ type Props = {
   approaches: ApproachRow[];
   keepOutKm: number;
   selectedNoradId: string | null;
+  scrubTRelSec: number;
   onSelectApproach: (noradId: string | null) => void;
 };
 
@@ -94,45 +101,89 @@ function PrimaryPath({ points }: { points: [number, number, number][] }) {
     <Line
       points={points}
       color="#3aa0c0"
-      lineWidth={2.75}
+      lineWidth={1.75}
       transparent
-      opacity={0.98}
+      opacity={0.28}
     />
   );
 }
 
-function NeighborhoodObject({
-  row,
-  keepOutKm,
+/** Velocity arrow: shaft + tip along vel direction. */
+function VelocityArrow({
+  origin,
+  vel,
+  color,
+  scaleKm = 180,
+}: {
+  origin: EcefVec;
+  vel: EcefVec;
+  color: string;
+  scaleKm?: number;
+}) {
+  const speed = Math.hypot(vel[0], vel[1], vel[2]);
+  if (speed < 1e-6) return null;
+  const dir: EcefVec = [vel[0] / speed, vel[1] / speed, vel[2] / speed];
+  const len = scaleKm;
+  const tip: EcefVec = [
+    origin[0] + dir[0] * len,
+    origin[1] + dir[1] * len,
+    origin[2] + dir[2] * len,
+  ];
+  const mid: EcefVec = [
+    origin[0] + dir[0] * len * 0.82,
+    origin[1] + dir[1] * len * 0.82,
+    origin[2] + dir[2] * len * 0.82,
+  ];
+  const o3 = toThree(origin);
+  const t3 = toThree(tip);
+  const m3 = toThree(mid);
+  // Orient cone along velocity in Three space
+  const quat = new THREE.Quaternion();
+  const from = new THREE.Vector3(0, 1, 0);
+  const to = new THREE.Vector3(t3[0] - o3[0], t3[1] - o3[1], t3[2] - o3[2]).normalize();
+  quat.setFromUnitVectors(from, to);
+
+  return (
+    <group>
+      <Line points={[o3, t3]} color={color} lineWidth={2} />
+      <mesh position={m3} quaternion={quat}>
+        <coneGeometry args={[22, 70, 8]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.25} />
+      </mesh>
+    </group>
+  );
+}
+
+function LiveSecondary({
+  obj,
+  primaryEcef,
   selected,
   dimmed,
   onSelect,
 }: {
-  row: ApproachRow;
-  keepOutKm: number;
+  obj: LiveNeighborhoodObject;
+  primaryEcef: EcefVec;
   selected: boolean;
   dimmed: boolean;
   onSelect: () => void;
 }) {
-  if (!row.secondaryEcef || !row.primaryEcef) return null;
-  const breach = row.missKm < keepOutKm;
-  const sec = toThree(row.secondaryEcef);
-  const pri = toThree(row.primaryEcef);
-  const r = selected ? 55 : breach ? 38 : 28;
-  const color = breach ? "#c45c26" : "#2f7d4a";
+  const sec = toThree(obj.ecef);
+  const pri = toThree(primaryEcef);
+  const r = selected ? 55 : obj.breach ? 40 : 28;
+  const color = obj.breach ? "#c45c26" : "#2f7d4a";
 
   return (
     <group>
-      {(selected || breach) && (
+      {(selected || obj.breach) && (
         <Line
           points={[pri, sec]}
-          color={breach ? "#c45c26" : "#7eb8c9"}
+          color={obj.breach ? "#c45c26" : "#7eb8c9"}
           lineWidth={selected ? 2.25 : 1.25}
           dashed={!selected}
           dashSize={40}
           gapSize={30}
           transparent
-          opacity={dimmed ? 0.12 : selected ? 0.95 : 0.55}
+          opacity={dimmed ? 0.1 : selected ? 0.95 : 0.5}
         />
       )}
       <mesh
@@ -152,23 +203,14 @@ function NeighborhoodObject({
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={selected ? 0.55 : breach ? 0.28 : 0.08}
+          emissiveIntensity={selected ? 0.55 : obj.breach ? 0.3 : 0.08}
           transparent
-          opacity={dimmed ? 0.18 : 1}
+          opacity={dimmed ? 0.16 : 1}
           roughness={0.45}
         />
       </mesh>
-      {selected && (
-        <mesh position={pri}>
-          <sphereGeometry args={[32, 12, 12]} />
-          <meshStandardMaterial
-            color="#f3f6f4"
-            emissive="#1f6f8b"
-            emissiveIntensity={0.35}
-            transparent
-            opacity={0.95}
-          />
-        </mesh>
+      {!dimmed && (
+        <VelocityArrow origin={obj.ecef} vel={obj.vel} color={color} scaleKm={140} />
       )}
     </group>
   );
@@ -207,6 +249,7 @@ function SceneContents({
   approaches,
   keepOutKm,
   selectedNoradId,
+  scrubTRelSec,
   onSelectApproach,
 }: Props) {
   const entry = viz.byDelayMinutes[String(delayMinutes)];
@@ -220,6 +263,23 @@ function SceneContents({
     return expandEcefTrack(entry.primaryEcef).map((p) => toThree(p.ecef));
   }, [entry]);
 
+  const scrubIdx = entry
+    ? scrubIndexForTime(entry.primaryEcef, scrubTRelSec)
+    : 0;
+  const primary = entry ? primaryAtIndex(entry.primaryEcef, scrubIdx) : null;
+
+  const liveObjects = useMemo(
+    () =>
+      computeLiveNeighborhood(
+        viz,
+        delayMinutes,
+        approaches,
+        scrubTRelSec,
+        keepOutKm,
+      ),
+    [viz, delayMinutes, approaches, scrubTRelSec, keepOutKm],
+  );
+
   return (
     <>
       <color attach="background" args={["#0b2833"]} />
@@ -232,17 +292,36 @@ function SceneContents({
       <PadMarker position={padThree} />
       <PrimaryPath points={trackPts} />
 
-      {approaches.map((row) => {
-        const selected = row.noradId === selectedNoradId;
+      {primary && (
+        <group>
+          <mesh position={toThree(primary.ecef)}>
+            <sphereGeometry args={[48, 16, 16]} />
+            <meshStandardMaterial
+              color="#f3f6f4"
+              emissive="#1f6f8b"
+              emissiveIntensity={0.45}
+            />
+          </mesh>
+          <VelocityArrow
+            origin={primary.ecef}
+            vel={primary.vel}
+            color="#3aa0c0"
+            scaleKm={220}
+          />
+        </group>
+      )}
+
+      {liveObjects.map((obj) => {
+        const selected = obj.noradId === selectedNoradId;
         const dimmed = selectedNoradId != null && !selected;
         return (
-          <NeighborhoodObject
-            key={row.noradId}
-            row={row}
-            keepOutKm={keepOutKm}
+          <LiveSecondary
+            key={obj.noradId}
+            obj={obj}
+            primaryEcef={primary!.ecef}
             selected={selected}
             dimmed={dimmed}
-            onSelect={() => onSelectApproach(selected ? null : row.noradId)}
+            onSelect={() => onSelectApproach(selected ? null : obj.noradId)}
           />
         );
       })}
@@ -269,7 +348,6 @@ export function TrajectoryScene(props: Props) {
       onPointerMissed={() => props.onSelectApproach(null)}
       gl={{ antialias: true, alpha: false }}
     >
-      {/* Remount camera framing when delay changes so OrbitControls resets gently */}
       <SceneContents key={props.delayMinutes} {...props} />
     </Canvas>
   );

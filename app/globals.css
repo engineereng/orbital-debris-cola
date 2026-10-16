@@ -516,6 +516,115 @@ td.muted {
   color: var(--ink-soft);
 }
 
+.horizon-scrub {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--paper-2);
+  border-radius: 10px;
+}
+
+.horizon-scrub-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.88rem;
+}
+
+.horizon-scrub-label .k {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.horizon-scrub-label .muted {
+  color: var(--ink-soft);
+  font-weight: 400;
+  margin-left: 0.35rem;
+}
+
+.horizon-scrub-range {
+  width: 100%;
+  accent-color: var(--sea);
+  height: 1.6rem;
+}
+
+.horizon-scrub-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.viz-subhead {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.scrub-dist-panel {
+  margin-top: 0.85rem;
+}
+
+.scrub-dist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.35rem;
+}
+
+.scrub-dist-list button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+}
+
+.scrub-dist-list button:hover {
+  border-color: var(--sea);
+}
+
+.scrub-dist-list li.breach button .dist {
+  color: var(--hold);
+  font-weight: 600;
+}
+
+.scrub-dist-list li.selected button {
+  border-color: var(--sea);
+  background: rgba(31, 111, 139, 0.1);
+  box-shadow: inset 3px 0 0 var(--sea);
+}
+
+.scrub-dist-list .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-overlay-legend .leg.primary-now::before {
+  background: #f3f6f4;
+  box-shadow: inset 0 0 0 1.5px #1f6f8b;
+}
+
 .viz-selected {
   margin-top: 0.85rem;
   padding: 0.65rem 0.85rem;

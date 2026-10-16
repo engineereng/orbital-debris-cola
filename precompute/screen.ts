@@ -18,7 +18,7 @@ function missKm(
   return Math.hypot(a[0] - b.x, a[1] - b.y, a[2] - b.z);
 }
 
-type SecondaryCache = {
+export type SecondaryCache = {
   obj: CatalogObject;
   /** position at each global sample index; null if propagate failed */
   positions: ({ x: number; y: number; z: number } | null)[];

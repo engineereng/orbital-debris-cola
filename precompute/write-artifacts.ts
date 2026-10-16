@@ -28,7 +28,11 @@ export function writeArtifacts(opts: {
   };
 
   for (const [name, data] of Object.entries(files)) {
-    const json = JSON.stringify(data, null, 2) + "\n";
+    // viz.json is large (per-delay neighborhood scrub) — keep compact
+    const json =
+      (name === "viz.json"
+        ? JSON.stringify(data)
+        : JSON.stringify(data, null, 2)) + "\n";
     writeFileSync(join(opts.artifactsDir, name), json);
     writeFileSync(join(opts.publicDataDir, name), json);
   }

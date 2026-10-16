@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-10-16T20:02:03.131Z",
+  "generatedAtUtc": "2026-10-16T21:22:15.885Z",
   "catalogObjectCount": 1200,
   "primaryVersion": "nova-class-v1",
   "keepOutKm": 25,
@@ -15,6 +15,6 @@
     "Demo cap applied: 1200 of 15157 LEO candidates",
     "Hold cells: 6 / 121",
     "Miss-distance keep-out is a demo screening rule — not Pc / ops COLA",
-    "Viz: per-delay primary ECEF tracks @ 60s + approach ECEF/geodetic at TCA"
+    "Viz: primary ECEF + top-N neighborhood scrub @ 60s; approach ECEF/geodetic at TCA"
   ]
 }

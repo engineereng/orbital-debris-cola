@@ -149,12 +149,18 @@ function runScreen(): void {
 
   const approaches: ApproachesArtifact = { topN: TOP_N, byDelayMinutes };
 
-  console.log("Building per-delay primary ECEF tracks for 3D viz…");
+  console.log(
+    "Building per-delay primary ECEF tracks + top-N neighborhood scrub…",
+  );
   const viz = buildVizArtifact({
     ephem,
     windowMinutes: WINDOW_MINUTES,
     sampleStepMinutes: SAMPLE_STEP_MINUTES,
     trackStepSec: VIZ_TRACK_STEP_SEC,
+    approaches,
+    caches,
+    gridStartMs: windowStartMs,
+    gridStepMs,
   });
 
   const holdCount = cells.filter((c) => c.status === "hold").length;
@@ -176,7 +182,7 @@ function runScreen(): void {
         : "Full filtered LEO set used",
       `Hold cells: ${holdCount} / ${cells.length}`,
       "Miss-distance keep-out is a demo screening rule — not Pc / ops COLA",
-      `Viz: per-delay primary ECEF tracks @ ${VIZ_TRACK_STEP_SEC}s + approach ECEF/geodetic at TCA`,
+      `Viz: primary ECEF + top-N neighborhood scrub @ ${VIZ_TRACK_STEP_SEC}s; approach ECEF/geodetic at TCA`,
     ],
   });
 
