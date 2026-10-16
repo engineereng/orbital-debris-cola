@@ -17,6 +17,7 @@ import {
   writePrimaryEphemeris,
 } from "./primary";
 import { buildSecondaryCache, screenDelay } from "./screen";
+import { buildVizArtifact } from "./viz-track";
 import { buildRunMeta, writeArtifacts } from "./write-artifacts";
 import type { ApproachesArtifact, StripArtifact } from "../lib/types";
 
@@ -35,6 +36,8 @@ const TOP_N = 20;
 const DEMO_CAP = 1200;
 const MAX_PERIGEE_KM = 2000;
 const SCREEN_STEP_SEC = 30;
+/** Geodetic primary track sample step for map / altitude chart (seconds). */
+const VIZ_TRACK_STEP_SEC = 60;
 
 /** Pinned demo window — aligned to catalog median epoch day (set after pin). */
 const DEFAULT_WINDOW_START = "2026-10-12T16:00:00.000Z";
@@ -146,6 +149,20 @@ function runScreen(): void {
 
   const approaches: ApproachesArtifact = { topN: TOP_N, byDelayMinutes };
 
+  console.log(
+    "Building per-delay primary ECEF tracks + top-N neighborhood scrub…",
+  );
+  const viz = buildVizArtifact({
+    ephem,
+    windowMinutes: WINDOW_MINUTES,
+    sampleStepMinutes: SAMPLE_STEP_MINUTES,
+    trackStepSec: VIZ_TRACK_STEP_SEC,
+    approaches,
+    caches,
+    gridStartMs: windowStartMs,
+    gridStepMs,
+  });
+
   const holdCount = cells.filter((c) => c.status === "hold").length;
   const runMeta = buildRunMeta({
     catalogObjectCount: objects.length,
@@ -165,6 +182,7 @@ function runScreen(): void {
         : "Full filtered LEO set used",
       `Hold cells: ${holdCount} / ${cells.length}`,
       "Miss-distance keep-out is a demo screening rule — not Pc / ops COLA",
+      `Viz: primary ECEF + top-N neighborhood scrub @ ${VIZ_TRACK_STEP_SEC}s; approach ECEF/geodetic at TCA`,
     ],
   });
 
@@ -173,6 +191,7 @@ function runScreen(): void {
     publicDataDir: PUBLIC_DATA,
     strip,
     approaches,
+    viz,
     runMeta,
     catalogMetaPath: join(CATALOG_DIR, "catalog.meta.json"),
   });

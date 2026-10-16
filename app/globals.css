@@ -211,8 +211,11 @@ body {
 .slider-panel {
   animation-delay: 0.22s;
 }
+.viz-panel {
+  animation-delay: 0.26s;
+}
 .table-panel {
-  animation-delay: 0.28s;
+  animation-delay: 0.32s;
 }
 
 .panel-head h2 {
@@ -399,6 +402,264 @@ tr.breach td:nth-child(3) {
   font-weight: 600;
 }
 
+tr.selected-row td {
+  background: rgba(31, 111, 139, 0.12);
+  box-shadow: inset 3px 0 0 var(--sea);
+}
+
+tbody tr {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+tbody tr:hover td {
+  background: rgba(31, 111, 139, 0.06);
+}
+
+tbody tr.selected-row:hover td {
+  background: rgba(31, 111, 139, 0.14);
+}
+
+td.muted {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.method-captions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.method-captions span {
+  padding: 0.28rem 0.55rem;
+  background: var(--paper-2);
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+.viz-stage {
+  position: relative;
+  height: min(520px, 62vh);
+  min-height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b2833;
+  border: 1px solid rgba(14, 36, 51, 0.2);
+}
+
+.viz-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: none;
+}
+
+.viz-canvas-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: min(520px, 62vh);
+  min-height: 320px;
+  background: #0b2833;
+  color: rgba(245, 250, 252, 0.75);
+  border-radius: 12px;
+  font-size: 0.92rem;
+}
+
+.viz-overlay-legend {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(8, 28, 40, 0.72);
+  color: rgba(245, 250, 252, 0.88);
+  font-size: 0.72rem;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+.viz-overlay-legend .leg::before {
+  content: "";
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.3rem;
+  border-radius: 50%;
+  vertical-align: -1px;
+}
+
+.viz-overlay-legend .leg.pad::before {
+  background: #c45c26;
+}
+.viz-overlay-legend .leg.track::before {
+  border-radius: 2px;
+  background: #3aa0c0;
+}
+.viz-overlay-legend .leg.sec::before {
+  background: #2f7d4a;
+}
+.viz-overlay-legend .leg.breach::before {
+  background: #c45c26;
+}
+
+.viz-stats {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.horizon-scrub {
+  margin: 0 0 0.85rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--paper-2);
+  border-radius: 10px;
+}
+
+.horizon-scrub-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.88rem;
+}
+
+.horizon-scrub-label .k {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.horizon-scrub-label .muted {
+  color: var(--ink-soft);
+  font-weight: 400;
+  margin-left: 0.35rem;
+}
+
+.horizon-scrub-range {
+  width: 100%;
+  accent-color: var(--sea);
+  height: 1.6rem;
+}
+
+.horizon-scrub-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.viz-subhead {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.scrub-dist-panel {
+  margin-top: 0.85rem;
+}
+
+.scrub-dist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.35rem;
+}
+
+.scrub-dist-list button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+}
+
+.scrub-dist-list button:hover {
+  border-color: var(--sea);
+}
+
+.scrub-dist-list li.breach button .dist {
+  color: var(--hold);
+  font-weight: 600;
+}
+
+.scrub-dist-list li.selected button {
+  border-color: var(--sea);
+  background: rgba(31, 111, 139, 0.1);
+  box-shadow: inset 3px 0 0 var(--sea);
+}
+
+.scrub-dist-list .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-overlay-legend .leg.primary-now::before {
+  background: #f3f6f4;
+  box-shadow: inset 0 0 0 1.5px #1f6f8b;
+}
+
+.viz-selected {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(31, 111, 139, 0.1);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.viz-clear-sel {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+
+.viz-clear-sel:hover {
+  color: var(--ink);
+  border-color: var(--sea);
+}
+
+.viz-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
 .state {
   padding: 1rem;
   border-radius: 10px;
@@ -479,6 +740,13 @@ tr.breach td:nth-child(3) {
   margin-right: auto;
   color: var(--ink-soft);
   font-size: 0.82rem;
+}
+
+@media (max-width: 800px) {
+  .viz-stage,
+  .viz-canvas-fallback {
+    height: min(420px, 58vh);
+  }
 }
 
 @media (max-width: 800px) {

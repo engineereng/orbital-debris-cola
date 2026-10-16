@@ -21,7 +21,10 @@ export function DelaySlider({
     <section className="panel slider-panel" aria-label="Liftoff delay control">
       <div className="panel-head">
         <h2>Liftoff delay</h2>
-        <p>Scrub +minutes from window open · screening horizon stays ascent + ~3 h</p>
+        <p>
+          Scrub +minutes from window open · screening horizon stays ascent + ~3 h.
+          Delay shifts <strong>when</strong> you lift off — not the vehicle shape.
+        </p>
       </div>
       <div className="slider-row">
         <label className="delay-value" htmlFor="delay-slider">
