@@ -5,6 +5,7 @@ import type {
   CatalogMeta,
   RunMeta,
   StripArtifact,
+  VizArtifact,
 } from "../lib/types";
 
 export function writeArtifacts(opts: {
@@ -12,6 +13,7 @@ export function writeArtifacts(opts: {
   publicDataDir: string;
   strip: StripArtifact;
   approaches: ApproachesArtifact;
+  viz: VizArtifact;
   runMeta: RunMeta;
   catalogMetaPath: string;
 }): void {
@@ -21,11 +23,16 @@ export function writeArtifacts(opts: {
   const files: Record<string, unknown> = {
     "strip.json": opts.strip,
     "approaches.json": opts.approaches,
+    "viz.json": opts.viz,
     "run.meta.json": opts.runMeta,
   };
 
   for (const [name, data] of Object.entries(files)) {
-    const json = JSON.stringify(data, null, 2) + "\n";
+    // viz.json is large (per-delay neighborhood scrub) — keep compact
+    const json =
+      (name === "viz.json"
+        ? JSON.stringify(data)
+        : JSON.stringify(data, null, 2)) + "\n";
     writeFileSync(join(opts.artifactsDir, name), json);
     writeFileSync(join(opts.publicDataDir, name), json);
   }

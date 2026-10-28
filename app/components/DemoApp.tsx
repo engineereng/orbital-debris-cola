@@ -10,11 +10,13 @@ import { ApproachTable } from "./ApproachTable";
 import { DelaySlider } from "./DelaySlider";
 import { Disclaimer } from "./Disclaimer";
 import { RiskStrip } from "./RiskStrip";
+import { TrajectoryViz } from "./TrajectoryViz";
 
 export function DemoApp() {
   const [data, setData] = useState<DemoArtifacts | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [delayMinutes, setDelayMinutes] = useState(0);
+  const [selectedNoradId, setSelectedNoradId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,6 +37,11 @@ export function DemoApp() {
     };
   }, []);
 
+  // Clear approach highlight when T₀ changes
+  useEffect(() => {
+    setSelectedNoradId(null);
+  }, [delayMinutes]);
+
   const selectedCell = data?.strip.cells[delayMinutes];
   const approaches = useMemo(() => {
     if (!data) return [];
@@ -44,6 +51,10 @@ export function DemoApp() {
   const selectedT0Utc = data
     ? addMinutesIso(data.strip.windowStartUtc, delayMinutes)
     : "";
+
+  const handleDelayChange = (d: number) => {
+    setDelayMinutes(d);
+  };
 
   return (
     <div className="demo-shell">
@@ -114,7 +125,7 @@ export function DemoApp() {
                 cells={data.strip.cells}
                 delayMinutes={delayMinutes}
                 keepOutKm={data.strip.keepOutKm}
-                onSelect={setDelayMinutes}
+                onSelect={handleDelayChange}
               />
             </div>
 
@@ -124,13 +135,26 @@ export function DemoApp() {
               selectedT0Utc={selectedT0Utc}
               status={selectedCell.status}
               minMissKm={selectedCell.minMissKm}
-              onChange={setDelayMinutes}
+              onChange={handleDelayChange}
             />
+
+            <div id="viz">
+              <TrajectoryViz
+                viz={data.viz}
+                delayMinutes={delayMinutes}
+                approaches={approaches}
+                keepOutKm={data.strip.keepOutKm}
+                selectedNoradId={selectedNoradId}
+                onSelectApproach={setSelectedNoradId}
+              />
+            </div>
 
             <ApproachTable
               rows={approaches}
               keepOutKm={data.strip.keepOutKm}
               status={selectedCell.status}
+              selectedNoradId={selectedNoradId}
+              onSelect={setSelectedNoradId}
             />
           </>
         )}

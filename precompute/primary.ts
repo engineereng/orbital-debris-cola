@@ -1,5 +1,6 @@
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import * as satellite from "satellite.js";
 import type { PrimaryEphemeris, PrimarySample } from "../lib/types";
 
 const EARTH_RADIUS_KM = 6378.137;
@@ -16,58 +17,42 @@ function normalizeAngle(a: number): number {
   return x;
 }
 
-/** Approximate GMST (rad) from Julian date — sufficient for synthetic TEME. */
-function gmstRad(date: Date): number {
-  const jd =
-    date.getTime() / 86400000 + 2440587.5;
-  const t = (jd - 2451545.0) / 36525;
-  let gmst =
-    (67310.54841 +
-      (876600 * 3600 + 8640184.812866) * t +
-      0.093104 * t * t -
-      6.2e-6 * t * t * t) *
-    DEG /
-    240;
-  return normalizeAngle(gmst);
-}
-
+/** Geodetic → ECEF via satellite.js (WGS-84). */
 function ecefFromLla(latDeg: number, lonDeg: number, altKm: number): [number, number, number] {
-  const lat = latDeg * DEG;
-  const lon = lonDeg * DEG;
-  const cosLat = Math.cos(lat);
-  const sinLat = Math.sin(lat);
-  const r = EARTH_RADIUS_KM + altKm;
-  return [r * cosLat * Math.cos(lon), r * cosLat * Math.sin(lon), r * sinLat];
+  const ecf = satellite.geodeticToEcf({
+    latitude: latDeg * DEG,
+    longitude: lonDeg * DEG,
+    height: altKm,
+  });
+  return [ecf.x, ecf.y, ecf.z];
 }
 
+/** ECEF → TEME/ECI using satellite.js (same frame as SGP4 secondaries). */
 function ecefToTeme(rEcef: [number, number, number], date: Date): [number, number, number] {
-  const theta = gmstRad(date);
-  const c = Math.cos(theta);
-  const s = Math.sin(theta);
-  // ECEF → TEME: rotate by -GMST about Z
-  return [c * rEcef[0] + s * rEcef[1], -s * rEcef[0] + c * rEcef[1], rEcef[2]];
+  const gmst = satellite.gstime(date);
+  const eci = satellite.ecfToEci({ x: rEcef[0], y: rEcef[1], z: rEcef[2] }, gmst);
+  return [eci.x, eci.y, eci.z];
 }
 
-function vEcefToTeme(vEcef: [number, number, number], rEcef: [number, number, number], date: Date): [number, number, number] {
-  const theta = gmstRad(date);
-  const c = Math.cos(theta);
-  const s = Math.sin(theta);
-  // Account for Earth rotation: v_inertial_ecef_frame = v_ecef + ω × r
+function vEcefToTeme(
+  vEcef: [number, number, number],
+  rEcef: [number, number, number],
+  date: Date,
+): [number, number, number] {
+  const gmst = satellite.gstime(date);
+  // v_inertial in ECEF axes = v_ecef + ω × r
   const wxr: [number, number, number] = [
     -OMEGA_EARTH * rEcef[1],
     OMEGA_EARTH * rEcef[0],
     0,
   ];
-  const vInertialEcef: [number, number, number] = [
-    vEcef[0] + wxr[0],
-    vEcef[1] + wxr[1],
-    vEcef[2] + wxr[2],
-  ];
-  return [
-    c * vInertialEcef[0] + s * vInertialEcef[1],
-    -s * vInertialEcef[0] + c * vInertialEcef[1],
-    vInertialEcef[2],
-  ];
+  const vInertialEcef = {
+    x: vEcef[0] + wxr[0],
+    y: vEcef[1] + wxr[1],
+    z: vEcef[2] + wxr[2],
+  };
+  const eci = satellite.ecfToEci(vInertialEcef, gmst);
+  return [eci.x, eci.y, eci.z];
 }
 
 function add(a: [number, number, number], b: [number, number, number]): [number, number, number] {
@@ -98,6 +83,7 @@ function cross(a: [number, number, number], b: [number, number, number]): [numbe
 /**
  * Parametric Nova-class LEO insertion from Cape (SLC-14 style narrative).
  * Simulated — not real Stoke ephemeris.
+ * Positions are TEME-compatible with satellite.js SGP4 (same frame as catalog).
  */
 export function generateNovaClassEphemeris(opts: {
   referenceLiftoffUtc: string;
@@ -121,7 +107,10 @@ export function generateNovaClassEphemeris(opts: {
 
   // Choose RAAN so ascending-node/ground-track is Cape-adjacent at insertion
   const padEcef = ecefFromLla(CAPE.latDeg, CAPE.lonDeg, CAPE.altKm);
-  const padTeme0 = ecefToTeme(padEcef, new Date(liftoff.getTime() + ascentDurationSec * 1000));
+  const padTeme0 = ecefToTeme(
+    padEcef,
+    new Date(liftoff.getTime() + ascentDurationSec * 1000),
+  );
   const nodeLon = Math.atan2(padTeme0[1], padTeme0[0]);
   const raan = normalizeAngle(nodeLon);
 
@@ -158,7 +147,9 @@ export function generateNovaClassEphemeris(opts: {
       const alt = CAPE.altKm + s * insertionAltitudeKm;
       // Downrange east ~1500 km class over ascent
       const downrangeKm = s * 1800;
-      const lon = CAPE.lonDeg + (downrangeKm / (EARTH_RADIUS_KM * Math.cos(CAPE.latDeg * DEG))) / DEG;
+      const lon =
+        CAPE.lonDeg +
+        downrangeKm / (EARTH_RADIUS_KM * Math.cos(CAPE.latDeg * DEG)) / DEG;
       const lat = CAPE.latDeg + s * 0.4; // slight north creep
       const rEcef = ecefFromLla(lat, lon, alt);
       const r = ecefToTeme(rEcef, date);
@@ -171,7 +162,10 @@ export function generateNovaClassEphemeris(opts: {
         0,
       ]);
       const upEcef = unit(rEcef);
-      const vAscentEcef = add(scale(eastEcef, 0.2 + 7.2 * s), scale(upEcef, 1.2 * (1 - s)));
+      const vAscentEcef = add(
+        scale(eastEcef, 0.2 + 7.2 * s),
+        scale(upEcef, 1.2 * (1 - s)),
+      );
       const vAscent = vEcefToTeme(vAscentEcef, rEcef, date);
       const v = add(scale(vAscent, 1 - s), scale(insert.v, s));
       // Soft blend position toward insertion at end of ascent

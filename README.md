@@ -11,7 +11,8 @@ Portfolio **COLA screening** demo: scrub a 2-hour Cape Canaveral launch window a
 - Screening horizon: ascent + ~3 h early orbit per T₀
 - Keep-out rule: miss distance **&lt; 25 km** → hold on the risk strip
 - Pinned CelesTrak GP/TLE-class catalog (LEO perigee &lt; 2000 km), demo-capped for size
-- Offline UI: risk strip · delay slider · approach table · always-on honesty disclaimer
+- Offline UI: risk strip · delay slider · **3D primary trajectory + neighborhood** · approach table · honesty disclaimer
+- Delay = liftoff time only (does not reshape the vehicle profile); absolute geometry vs catalog shifts with Earth rotation + moving secondaries
 - Shell congestion / altitude–inclination bins → **v2**
 
 ## Run locally (offline)
@@ -36,7 +37,7 @@ Needs a CelesTrak-style 3-line TLE dump at `data/catalog/source-active.tle` (not
 # curl -fsSL "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle" \
 #   -o data/catalog/source-active.tle
 
-npm run precompute   # pins capped catalog + primary, writes strip/approaches
+npm run precompute   # pins capped catalog + primary, writes strip/approaches/viz
 ```
 
 Outputs:
@@ -45,8 +46,10 @@ Outputs:
 |------|------|
 | `data/catalog/catalog.tle` | Pinned demo catalog |
 | `data/primary/nova-class-v1.json` | Simulated primary ephemeris |
-| `data/artifacts/*.json` | Precompute outputs |
-| `public/data/*.json` | Static files the UI fetches |
+| `data/artifacts/*.json` | Precompute outputs (incl. `viz.json`) |
+| `public/data/*.json` | Static files the UI fetches (`strip`, `approaches`, `viz`, meta) |
+
+Viz details: Project store `docs/viz-v1.md` (pad + ground track + altitude chart; what is / is not shown).
 
 ## Honesty note
 
