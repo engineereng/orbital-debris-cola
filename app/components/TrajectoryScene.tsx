@@ -57,6 +57,19 @@ const MARKER = {
   padConeH: 90 * MARKER_SCALE,
 } as const;
 
+/**
+ * Camera distances in km. Closest zoom targets a ~10 km scale-bar reading
+ * (world width ≈ 45 km at fov 42° → camera distance ≈ 12–35 km).
+ */
+const CAM = {
+  minDistanceKm: 12,
+  /** Fit floor when framing primary alone @ scrub t */
+  fitRadiusPrimaryKm: 28,
+  /** Fit floor when framing primary+secondary pair (miss-scale) */
+  fitRadiusPairKm: 12,
+  maxDistanceKm: 6378.137 * 6,
+} as const;
+
 function framing(padEcef: EcefVec, earthRadiusKm: number) {
   const padThree = toThree(padEcef);
   const pad = new THREE.Vector3(...padThree);
@@ -95,18 +108,19 @@ function fitCameraToPoints(
   camera: THREE.PerspectiveCamera,
   controls: OrbitControlsImpl | null,
   padding = 1.75,
+  minRadiusKm = CAM.fitRadiusPrimaryKm,
 ) {
   if (points.length === 0) return;
   const mid = new THREE.Vector3();
   for (const p of points) mid.add(p);
   mid.multiplyScalar(1 / points.length);
 
-  let radius = 50;
+  let radius = 0;
   for (const p of points) radius = Math.max(radius, p.distanceTo(mid));
-  radius = Math.max(radius * padding, 90);
+  radius = Math.max(radius * padding, minRadiusKm);
 
   const fov = (camera.fov * Math.PI) / 180;
-  const dist = radius / Math.sin(fov / 2);
+  const dist = Math.max(radius / Math.sin(fov / 2), CAM.minDistanceKm);
 
   const radial = mid.clone().normalize();
   const prevTarget = controls?.target ?? mid.clone();
@@ -390,7 +404,8 @@ function CameraRig({
         points,
         camera as THREE.PerspectiveCamera,
         controlsRef.current,
-        foc ? 1.85 : 2.1,
+        foc ? 1.65 : 1.9,
+        foc ? CAM.fitRadiusPairKm : CAM.fitRadiusPrimaryKm,
       );
     apply();
     const id = requestAnimationFrame(apply);
@@ -407,8 +422,8 @@ function CameraRig({
       enableZoom
       enableRotate
       zoomSpeed={0.9}
-      minDistance={earthRadiusKm * 0.06}
-      maxDistance={earthRadiusKm * 6}
+      minDistance={CAM.minDistanceKm}
+      maxDistance={Math.max(CAM.maxDistanceKm, earthRadiusKm * 6)}
     />
   );
 }
