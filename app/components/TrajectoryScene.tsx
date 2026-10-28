@@ -2,7 +2,8 @@
 
 import { Canvas, useThree } from "@react-three/fiber";
 import { Line, OrbitControls } from "@react-three/drei";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import type { ApproachRow, EcefVec, VizArtifact } from "@/lib/types";
 import {
@@ -220,23 +221,67 @@ function CameraRig({
   position,
   target,
   earthRadiusKm,
+  focusEcef,
+  primaryEcef,
 }: {
   position: [number, number, number];
   target: [number, number, number];
   earthRadiusKm: number;
+  /** Selected secondary ECEF at current scrub t — pan here; do not change scrub. */
+  focusEcef: EcefVec | null;
+  primaryEcef: EcefVec | null;
 }) {
   const { camera } = useThree();
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+
+  // Default framing when delay changes (SceneContents remounts)
   useEffect(() => {
     camera.position.set(...position);
     camera.lookAt(...target);
     camera.updateProjectionMatrix();
+    const controls = controlsRef.current;
+    if (controls) {
+      controls.target.set(...target);
+      controls.update();
+    }
   }, [camera, position, target]);
+
+  // Pan/focus on selected secondary at current scrub time (keep t)
+  useEffect(() => {
+    if (!focusEcef || !primaryEcef) return;
+    const sec = new THREE.Vector3(...toThree(focusEcef));
+    const pri = new THREE.Vector3(...toThree(primaryEcef));
+    const mid = pri.clone().add(sec).multiplyScalar(0.5);
+    const sep = sec.clone().sub(pri);
+    const sepLen = Math.max(sep.length(), 40);
+    const radial = mid.clone().normalize();
+    let side = new THREE.Vector3().crossVectors(radial, sep);
+    if (side.lengthSq() < 1e-8) {
+      side = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), sep);
+    }
+    if (side.lengthSq() < 1e-8) side = new THREE.Vector3(1, 0, 0);
+    side.normalize();
+    const camPos = mid
+      .clone()
+      .add(radial.multiplyScalar(Math.min(sepLen * 4 + 250, 3500)))
+      .add(side.multiplyScalar(Math.min(sepLen * 2.2 + 120, 2000)));
+
+    camera.position.copy(camPos);
+    const controls = controlsRef.current;
+    if (controls) {
+      controls.target.copy(mid);
+      controls.update();
+    } else {
+      camera.lookAt(mid);
+    }
+  }, [focusEcef, primaryEcef, camera]);
 
   return (
     <OrbitControls
+      ref={controlsRef}
       makeDefault
       enablePan
-      minDistance={earthRadiusKm * 0.12}
+      minDistance={earthRadiusKm * 0.08}
       maxDistance={earthRadiusKm * 6}
       target={target}
     />
@@ -278,6 +323,11 @@ function SceneContents({
         keepOutKm,
       ),
     [viz, delayMinutes, approaches, scrubTRelSec, keepOutKm],
+  );
+
+  const selectedLive = useMemo(
+    () => liveObjects.find((o) => o.noradId === selectedNoradId) ?? null,
+    [liveObjects, selectedNoradId],
   );
 
   return (
@@ -330,6 +380,8 @@ function SceneContents({
         position={position}
         target={target}
         earthRadiusKm={viz.earthRadiusKm}
+        focusEcef={selectedLive?.ecef ?? null}
+        primaryEcef={primary?.ecef ?? null}
       />
     </>
   );

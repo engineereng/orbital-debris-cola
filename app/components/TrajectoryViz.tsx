@@ -57,14 +57,7 @@ export function TrajectoryViz({
     setScrubTRelSec(Math.min(maxT, Math.max(0, t)));
   }, [delayMinutes, approaches, scrubStep, maxT]);
 
-  // When selecting a table row, jump scrub to that object's TCA
-  useEffect(() => {
-    if (!selectedNoradId) return;
-    const row = approaches.find((a) => a.noradId === selectedNoradId);
-    if (!row) return;
-    const t = Math.round(row.tRelSec / scrubStep) * scrubStep;
-    setScrubTRelSec(Math.min(maxT, Math.max(0, t)));
-  }, [selectedNoradId, approaches, scrubStep, maxT]);
+  // Selecting a secondary keeps scrub time t — camera pans in the 3D scene.
 
   const live = useMemo(
     () =>
@@ -220,8 +213,9 @@ export function TrajectoryViz({
         </div>
       ) : (
         <p className="viz-hint">
-          Scrub the horizon, then click a table row or secondary to focus it.
-          Selecting a row jumps the scrubber to that object’s TCA.
+          Scrub the horizon to eye-ball threats. Click a table row or secondary to
+          pan the camera onto it at the <em>current</em> scrub time (distance @ t
+          stays visible).
         </p>
       )}
     </section>
