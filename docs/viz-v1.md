@@ -9,7 +9,8 @@ What the trajectory / neighborhood visualization shows — and what it does not.
 | **3D primary trajectory** | ECEF path from Cape pad through ascent / early orbit (faded polyline for context). |
 | **Horizon scrubber** | `tRelSec` from 0 → screening horizon on a **60 s** grid (same as path samples — labeled in UI). |
 | **At scrub time t** | Primary position + velocity arrow; same **top-N** approach objects with position, direction, and **distance from primary**. |
-| **Near-miss @ t** | Distance &lt; **25 km** at scrub time highlighted; selecting a secondary **keeps scrub time t** and pans the camera onto it. |
+| **Near-miss @ t** | Distance &lt; **25 km** at scrub time highlighted; selecting a secondary **keeps scrub time t** and frames primary+secondary. Scrubbing reframes primary (or the pair if selected). |
+| **Scale bar** | Zoom-linked readout (1 world unit = 1 km); updates with camera distance. |
 | **Approach table** | TCA miss distances (screening); clickable sync with the 3D scene. |
 
 Risk strip, delay slider, method captions, and disclaimers unchanged.

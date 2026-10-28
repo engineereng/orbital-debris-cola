@@ -1,8 +1,8 @@
 "use client";
 
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Line, OrbitControls } from "@react-three/drei";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type MutableRefObject, type RefObject } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import type { ApproachRow, EcefVec, VizArtifact } from "@/lib/types";
@@ -14,6 +14,13 @@ import {
   type LiveNeighborhoodObject,
 } from "@/lib/loadArtifacts";
 
+export type ScaleInfo = {
+  /** Nice round length represented by the bar (km); world units are 1:1 km */
+  labelKm: number;
+  /** Pixel width of that bar at current zoom */
+  barPx: number;
+};
+
 type Props = {
   viz: VizArtifact;
   delayMinutes: number;
@@ -22,6 +29,7 @@ type Props = {
   selectedNoradId: string | null;
   scrubTRelSec: number;
   onSelectApproach: (noradId: string | null) => void;
+  onScaleInfo?: (info: ScaleInfo) => void;
 };
 
 /** ECEF km → Three.js coords (Y-up): (x, z, -y). */
@@ -49,6 +57,56 @@ function framing(padEcef: EcefVec, earthRadiusKm: number) {
     target: target.toArray() as [number, number, number],
     position: position.toArray() as [number, number, number],
   };
+}
+
+function niceScaleKm(worldWidthKm: number, targetFraction = 0.22): number {
+  const target = Math.max(1, worldWidthKm * targetFraction);
+  const candidates = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+  let best = candidates[0];
+  for (const c of candidates) {
+    if (c <= target) best = c;
+  }
+  return best;
+}
+
+/** Fit camera so all points are in view with padding (1 world unit = 1 km). */
+function fitCameraToPoints(
+  points: THREE.Vector3[],
+  camera: THREE.PerspectiveCamera,
+  controls: OrbitControlsImpl | null,
+  padding = 1.75,
+) {
+  if (points.length === 0) return;
+  const mid = new THREE.Vector3();
+  for (const p of points) mid.add(p);
+  mid.multiplyScalar(1 / points.length);
+
+  let radius = 50;
+  for (const p of points) radius = Math.max(radius, p.distanceTo(mid));
+  radius = Math.max(radius * padding, 90);
+
+  const fov = (camera.fov * Math.PI) / 180;
+  const dist = radius / Math.sin(fov / 2);
+
+  const radial = mid.clone().normalize();
+  const prevTarget = controls?.target ?? mid.clone();
+  let viewDir = camera.position.clone().sub(prevTarget);
+  if (viewDir.lengthSq() < 1e-6) {
+    let side = new THREE.Vector3().crossVectors(radial, new THREE.Vector3(0, 1, 0));
+    if (side.lengthSq() < 1e-8) side = new THREE.Vector3(1, 0, 0);
+    side.normalize();
+    viewDir = radial.clone().multiplyScalar(0.6).add(side.multiplyScalar(0.5));
+  }
+  viewDir.normalize();
+
+  const camPos = mid.clone().add(viewDir.multiplyScalar(dist));
+  camera.position.copy(camPos);
+  if (controls) {
+    controls.target.copy(mid);
+    controls.update();
+  } else {
+    camera.lookAt(mid);
+  }
 }
 
 function Earth({ radius }: { radius: number }) {
@@ -109,7 +167,6 @@ function PrimaryPath({ points }: { points: [number, number, number][] }) {
   );
 }
 
-/** Velocity arrow: shaft + tip along vel direction. */
 function VelocityArrow({
   origin,
   vel,
@@ -138,7 +195,6 @@ function VelocityArrow({
   const o3 = toThree(origin);
   const t3 = toThree(tip);
   const m3 = toThree(mid);
-  // Orient cone along velocity in Three space
   const quat = new THREE.Quaternion();
   const from = new THREE.Vector3(0, 1, 0);
   const to = new THREE.Vector3(t3[0] - o3[0], t3[1] - o3[1], t3[2] - o3[2]).normalize();
@@ -217,73 +273,99 @@ function LiveSecondary({
   );
 }
 
-function CameraRig({
-  position,
-  target,
-  earthRadiusKm,
-  focusEcef,
-  primaryEcef,
+/** Reports visible scale (km) at current zoom — 1 world unit = 1 km. */
+function ScaleReporter({
+  controlsRef,
+  onScaleInfo,
 }: {
-  position: [number, number, number];
-  target: [number, number, number];
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+  onScaleInfo?: (info: ScaleInfo) => void;
+}) {
+  const { camera, size } = useThree();
+  const lastKey = useRef("");
+
+  useFrame(() => {
+    if (!onScaleInfo) return;
+    const cam = camera as THREE.PerspectiveCamera;
+    const controls = controlsRef.current;
+    const target = controls?.target ?? new THREE.Vector3(0, 0, 0);
+    const dist = cam.position.distanceTo(target);
+    if (!Number.isFinite(dist) || dist < 1e-3) return;
+    const vFov = (cam.fov * Math.PI) / 180;
+    const worldHeight = 2 * Math.tan(vFov / 2) * dist;
+    const worldWidth = worldHeight * (size.width / Math.max(size.height, 1));
+    const labelKm = niceScaleKm(worldWidth);
+    const barPx = Math.max(24, Math.min(220, (labelKm / worldWidth) * size.width));
+    const key = `${labelKm}:${Math.round(barPx)}`;
+    if (key === lastKey.current) return;
+    lastKey.current = key;
+    onScaleInfo({ labelKm, barPx });
+  });
+
+  return null;
+}
+
+function CameraRig({
+  defaultPosition,
+  defaultTarget,
+  earthRadiusKm,
+  primaryEcef,
+  focusEcef,
+  scrubTRelSec,
+  controlsRef,
+}: {
+  defaultPosition: [number, number, number];
+  defaultTarget: [number, number, number];
   earthRadiusKm: number;
-  /** Selected secondary ECEF at current scrub t — pan here; do not change scrub. */
-  focusEcef: EcefVec | null;
   primaryEcef: EcefVec | null;
+  focusEcef: EcefVec | null;
+  scrubTRelSec: number;
+  controlsRef: MutableRefObject<OrbitControlsImpl | null>;
 }) {
   const { camera } = useThree();
-  const controlsRef = useRef<OrbitControlsImpl>(null);
 
-  // Default framing when delay changes (SceneContents remounts)
+  // Seed a pad-looking pose before first fit (delay remount)
   useEffect(() => {
-    camera.position.set(...position);
-    camera.lookAt(...target);
+    camera.position.set(...defaultPosition);
+    camera.lookAt(...defaultTarget);
     camera.updateProjectionMatrix();
-    const controls = controlsRef.current;
-    if (controls) {
-      controls.target.set(...target);
-      controls.update();
-    }
-  }, [camera, position, target]);
+  }, [camera, defaultPosition, defaultTarget]);
 
-  // Pan/focus on selected secondary at current scrub time (keep t)
+  // Scrub / select: frame primary @ t, or primary+selected secondary pair
   useEffect(() => {
-    if (!focusEcef || !primaryEcef) return;
-    const sec = new THREE.Vector3(...toThree(focusEcef));
-    const pri = new THREE.Vector3(...toThree(primaryEcef));
-    const mid = pri.clone().add(sec).multiplyScalar(0.5);
-    const sep = sec.clone().sub(pri);
-    const sepLen = Math.max(sep.length(), 40);
-    const radial = mid.clone().normalize();
-    let side = new THREE.Vector3().crossVectors(radial, sep);
-    if (side.lengthSq() < 1e-8) {
-      side = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), sep);
+    const points: THREE.Vector3[] = [];
+    if (primaryEcef) points.push(new THREE.Vector3(...toThree(primaryEcef)));
+    if (focusEcef) points.push(new THREE.Vector3(...toThree(focusEcef)));
+    if (points.length === 0) {
+      points.push(new THREE.Vector3(...defaultTarget));
     }
-    if (side.lengthSq() < 1e-8) side = new THREE.Vector3(1, 0, 0);
-    side.normalize();
-    const camPos = mid
-      .clone()
-      .add(radial.multiplyScalar(Math.min(sepLen * 4 + 250, 3500)))
-      .add(side.multiplyScalar(Math.min(sepLen * 2.2 + 120, 2000)));
-
-    camera.position.copy(camPos);
-    const controls = controlsRef.current;
-    if (controls) {
-      controls.target.copy(mid);
-      controls.update();
-    } else {
-      camera.lookAt(mid);
-    }
-  }, [focusEcef, primaryEcef, camera]);
+    const apply = () =>
+      fitCameraToPoints(
+        points,
+        camera as THREE.PerspectiveCamera,
+        controlsRef.current,
+        focusEcef ? 1.85 : 2.1,
+      );
+    apply();
+    const id = requestAnimationFrame(apply);
+    return () => cancelAnimationFrame(id);
+  }, [
+    scrubTRelSec,
+    primaryEcef,
+    focusEcef,
+    camera,
+    controlsRef,
+    defaultTarget,
+  ]);
 
   return (
     <OrbitControls
       ref={controlsRef}
       makeDefault
       enablePan
-      minDistance={earthRadiusKm * 0.08}
+      minDistance={earthRadiusKm * 0.06}
       maxDistance={earthRadiusKm * 6}
-      target={target}
+      target={defaultTarget}
     />
   );
 }
@@ -296,12 +378,14 @@ function SceneContents({
   selectedNoradId,
   scrubTRelSec,
   onSelectApproach,
+  onScaleInfo,
 }: Props) {
   const entry = viz.byDelayMinutes[String(delayMinutes)];
   const { padThree, target, position } = useMemo(
     () => framing(viz.pad.ecef, viz.earthRadiusKm),
     [viz.pad.ecef, viz.earthRadiusKm],
   );
+  const controlsRef = useRef<OrbitControlsImpl | null>(null);
 
   const trackPts = useMemo(() => {
     if (!entry) return [] as [number, number, number][];
@@ -377,12 +461,15 @@ function SceneContents({
       })}
 
       <CameraRig
-        position={position}
-        target={target}
+        defaultPosition={position}
+        defaultTarget={target}
         earthRadiusKm={viz.earthRadiusKm}
-        focusEcef={selectedLive?.ecef ?? null}
         primaryEcef={primary?.ecef ?? null}
+        focusEcef={selectedLive?.ecef ?? null}
+        scrubTRelSec={scrubTRelSec}
+        controlsRef={controlsRef}
       />
+      <ScaleReporter controlsRef={controlsRef} onScaleInfo={onScaleInfo} />
     </>
   );
 }

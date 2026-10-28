@@ -9,6 +9,7 @@ import {
   scrubIndexForTime,
 } from "@/lib/loadArtifacts";
 import type { ApproachRow, VizArtifact } from "@/lib/types";
+import type { ScaleInfo } from "./TrajectoryScene";
 import { VizErrorBoundary } from "./VizErrorBoundary";
 
 const TrajectoryScene = dynamic(
@@ -46,6 +47,7 @@ export function TrajectoryViz({
   const maxT = viz.horizonSec;
 
   const [scrubTRelSec, setScrubTRelSec] = useState(0);
+  const [scaleInfo, setScaleInfo] = useState<ScaleInfo | null>(null);
 
   // Reset scrub when delay changes; land near first TCA if available
   useEffect(() => {
@@ -149,8 +151,19 @@ export function TrajectoryViz({
                 selectedNoradId={selectedNoradId}
                 scrubTRelSec={snappedT}
                 onSelectApproach={onSelectApproach}
+                onScaleInfo={setScaleInfo}
               />
             </VizErrorBoundary>
+            <div className="viz-scale-bar" aria-label="Map scale">
+              <div
+                className="viz-scale-bar-line"
+                style={{ width: scaleInfo ? `${Math.round(scaleInfo.barPx)}px` : "80px" }}
+              />
+              <div className="viz-scale-bar-label mono">
+                {scaleInfo ? `${scaleInfo.labelKm} km` : "… km"}
+                <span className="viz-scale-bar-unit"> · 1 unit = 1 km</span>
+              </div>
+            </div>
             <div className="viz-overlay-legend" aria-hidden>
               <span className="leg pad">Pad</span>
               <span className="leg track">Primary path</span>
@@ -213,9 +226,9 @@ export function TrajectoryViz({
         </div>
       ) : (
         <p className="viz-hint">
-          Scrub the horizon to eye-ball threats. Click a table row or secondary to
-          pan the camera onto it at the <em>current</em> scrub time (distance @ t
-          stays visible).
+          Scrub the horizon to eye-ball threats (camera follows primary @ t). Click
+          a table row or secondary to frame that object with the primary at the{" "}
+          <em>current</em> scrub time — scrub time does not jump to TCA.
         </p>
       )}
     </section>
