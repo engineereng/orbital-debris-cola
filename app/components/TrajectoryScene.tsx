@@ -108,7 +108,7 @@ function fitCameraToPoints(
   camera: THREE.PerspectiveCamera,
   controls: OrbitControlsImpl | null,
   padding = 1.75,
-  minRadiusKm = CAM.fitRadiusPrimaryKm,
+  minRadiusKm: number = CAM.fitRadiusPrimaryKm,
 ) {
   if (points.length === 0) return;
   const mid = new THREE.Vector3();
