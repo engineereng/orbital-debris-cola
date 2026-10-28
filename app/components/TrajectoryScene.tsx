@@ -312,6 +312,7 @@ function CameraRig({
   primaryEcef,
   focusEcef,
   scrubTRelSec,
+  selectedNoradId,
   controlsRef,
 }: {
   defaultPosition: [number, number, number];
@@ -320,22 +321,38 @@ function CameraRig({
   primaryEcef: EcefVec | null;
   focusEcef: EcefVec | null;
   scrubTRelSec: number;
+  selectedNoradId: string | null;
   controlsRef: MutableRefObject<OrbitControlsImpl | null>;
 }) {
   const { camera } = useThree();
+  // Keep latest positions in refs so framing effect deps stay primitives only.
+  // (Passing new ecef array identities each render was resetting the camera and
+  // killing wheel zoom whenever the scale bar triggered a parent re-render.)
+  const primaryRef = useRef(primaryEcef);
+  const focusRef = useRef(focusEcef);
+  primaryRef.current = primaryEcef;
+  focusRef.current = focusEcef;
 
-  // Seed a pad-looking pose before first fit (delay remount)
+  // Seed a pad-looking pose once per delay mount
   useEffect(() => {
     camera.position.set(...defaultPosition);
     camera.lookAt(...defaultTarget);
     camera.updateProjectionMatrix();
-  }, [camera, defaultPosition, defaultTarget]);
+    const controls = controlsRef.current;
+    if (controls) {
+      controls.target.set(...defaultTarget);
+      controls.update();
+    }
+  }, [camera, defaultPosition, defaultTarget, controlsRef]);
 
-  // Scrub / select: frame primary @ t, or primary+selected secondary pair
+  // Reframe only when scrub time or selection identity changes — not on zoom /
+  // scale-bar updates.
   useEffect(() => {
+    const pri = primaryRef.current;
+    const foc = focusRef.current;
     const points: THREE.Vector3[] = [];
-    if (primaryEcef) points.push(new THREE.Vector3(...toThree(primaryEcef)));
-    if (focusEcef) points.push(new THREE.Vector3(...toThree(focusEcef)));
+    if (pri) points.push(new THREE.Vector3(...toThree(pri)));
+    if (foc) points.push(new THREE.Vector3(...toThree(foc)));
     if (points.length === 0) {
       points.push(new THREE.Vector3(...defaultTarget));
     }
@@ -344,28 +361,25 @@ function CameraRig({
         points,
         camera as THREE.PerspectiveCamera,
         controlsRef.current,
-        focusEcef ? 1.85 : 2.1,
+        foc ? 1.85 : 2.1,
       );
     apply();
     const id = requestAnimationFrame(apply);
     return () => cancelAnimationFrame(id);
-  }, [
-    scrubTRelSec,
-    primaryEcef,
-    focusEcef,
-    camera,
-    controlsRef,
-    defaultTarget,
-  ]);
+    // intentionally exclude primaryEcef/focusEcef array identities
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrubTRelSec, selectedNoradId, camera, controlsRef, defaultTarget]);
 
   return (
     <OrbitControls
       ref={controlsRef}
       makeDefault
       enablePan
+      enableZoom
+      enableRotate
+      zoomSpeed={0.9}
       minDistance={earthRadiusKm * 0.06}
       maxDistance={earthRadiusKm * 6}
-      target={defaultTarget}
     />
   );
 }
@@ -467,6 +481,7 @@ function SceneContents({
         primaryEcef={primary?.ecef ?? null}
         focusEcef={selectedLive?.ecef ?? null}
         scrubTRelSec={scrubTRelSec}
+        selectedNoradId={selectedNoradId}
         controlsRef={controlsRef}
       />
       <ScaleReporter controlsRef={controlsRef} onScaleInfo={onScaleInfo} />

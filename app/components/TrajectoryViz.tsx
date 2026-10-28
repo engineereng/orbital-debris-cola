@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   computeLiveNeighborhood,
   formatDuration,
@@ -48,6 +48,18 @@ export function TrajectoryViz({
 
   const [scrubTRelSec, setScrubTRelSec] = useState(0);
   const [scaleInfo, setScaleInfo] = useState<ScaleInfo | null>(null);
+  const onScaleInfo = useCallback((info: ScaleInfo) => {
+    setScaleInfo((prev) => {
+      if (
+        prev &&
+        prev.labelKm === info.labelKm &&
+        Math.round(prev.barPx) === Math.round(info.barPx)
+      ) {
+        return prev;
+      }
+      return info;
+    });
+  }, []);
 
   // Reset scrub when delay changes; land near first TCA if available
   useEffect(() => {
@@ -151,7 +163,7 @@ export function TrajectoryViz({
                 selectedNoradId={selectedNoradId}
                 scrubTRelSec={snappedT}
                 onSelectApproach={onSelectApproach}
-                onScaleInfo={setScaleInfo}
+                onScaleInfo={onScaleInfo}
               />
             </VizErrorBoundary>
             <div className="viz-scale-bar" aria-label="Map scale">
