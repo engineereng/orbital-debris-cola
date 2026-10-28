@@ -37,6 +37,26 @@ function toThree(v: EcefVec): [number, number, number] {
   return [v[0], v[2], -v[1]];
 }
 
+/**
+ * Marker sizes in km (1 world unit = 1 km).
+ * Prior radii were ~28–55 km and swallowed a ~14 km miss; this pass uses
+ * MARKER_SCALE ≈ 1/30 of those sizes so a 14 km separation clearly reads.
+ */
+const MARKER_SCALE = 1 / 30;
+const MARKER = {
+  primary: 48 * MARKER_SCALE, // ~1.6 km
+  secondary: 28 * MARKER_SCALE, // ~0.93 km
+  secondaryBreach: 40 * MARKER_SCALE, // ~1.33 km
+  secondarySelected: 55 * MARKER_SCALE, // ~1.83 km
+  arrowLenPrimary: 220 * MARKER_SCALE,
+  arrowLenSecondary: 140 * MARKER_SCALE,
+  arrowConeR: 22 * MARKER_SCALE,
+  arrowConeH: 70 * MARKER_SCALE,
+  pad: 45 * MARKER_SCALE,
+  padConeR: 28 * MARKER_SCALE,
+  padConeH: 90 * MARKER_SCALE,
+} as const;
+
 function framing(padEcef: EcefVec, earthRadiusKm: number) {
   const padThree = toThree(padEcef);
   const pad = new THREE.Vector3(...padThree);
@@ -143,11 +163,11 @@ function PadMarker({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
       <mesh>
-        <sphereGeometry args={[45, 16, 16]} />
+        <sphereGeometry args={[MARKER.pad, 16, 16]} />
         <meshStandardMaterial color="#0e2433" emissive="#0e2433" emissiveIntensity={0.2} />
       </mesh>
-      <mesh position={[0, 80, 0]}>
-        <coneGeometry args={[28, 90, 8]} />
+      <mesh position={[0, MARKER.padConeH * 0.9, 0]}>
+        <coneGeometry args={[MARKER.padConeR, MARKER.padConeH, 8]} />
         <meshStandardMaterial color="#c45c26" />
       </mesh>
     </group>
@@ -171,7 +191,7 @@ function VelocityArrow({
   origin,
   vel,
   color,
-  scaleKm = 180,
+  scaleKm = MARKER.arrowLenPrimary,
 }: {
   origin: EcefVec;
   vel: EcefVec;
@@ -204,7 +224,7 @@ function VelocityArrow({
     <group>
       <Line points={[o3, t3]} color={color} lineWidth={2} />
       <mesh position={m3} quaternion={quat}>
-        <coneGeometry args={[22, 70, 8]} />
+        <coneGeometry args={[MARKER.arrowConeR, MARKER.arrowConeH, 8]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.25} />
       </mesh>
     </group>
@@ -226,7 +246,11 @@ function LiveSecondary({
 }) {
   const sec = toThree(obj.ecef);
   const pri = toThree(primaryEcef);
-  const r = selected ? 55 : obj.breach ? 40 : 28;
+  const r = selected
+    ? MARKER.secondarySelected
+    : obj.breach
+      ? MARKER.secondaryBreach
+      : MARKER.secondary;
   const color = obj.breach ? "#c45c26" : "#2f7d4a";
 
   return (
@@ -267,7 +291,12 @@ function LiveSecondary({
         />
       </mesh>
       {!dimmed && (
-        <VelocityArrow origin={obj.ecef} vel={obj.vel} color={color} scaleKm={140} />
+        <VelocityArrow
+          origin={obj.ecef}
+          vel={obj.vel}
+          color={color}
+          scaleKm={MARKER.arrowLenSecondary}
+        />
       )}
     </group>
   );
@@ -443,7 +472,7 @@ function SceneContents({
       {primary && (
         <group>
           <mesh position={toThree(primary.ecef)}>
-            <sphereGeometry args={[48, 16, 16]} />
+            <sphereGeometry args={[MARKER.primary, 16, 16]} />
             <meshStandardMaterial
               color="#f3f6f4"
               emissive="#1f6f8b"
@@ -454,7 +483,7 @@ function SceneContents({
             origin={primary.ecef}
             vel={primary.vel}
             color="#3aa0c0"
-            scaleKm={220}
+            scaleKm={MARKER.arrowLenPrimary}
           />
         </group>
       )}
