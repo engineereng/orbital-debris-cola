@@ -12,7 +12,7 @@
     "precompute:screen": "tsx precompute/run.ts --screen-only"
   },
   "dependencies": {
-    "next": "16.4.0",
+    "next": "16.4.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "satellite.js": "^7.1.0",
